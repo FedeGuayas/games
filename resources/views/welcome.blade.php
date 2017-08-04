@@ -9,84 +9,69 @@
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
+        <link href="{{asset('css/welcome.css')}}" rel="stylesheet" type="text/css">
 
-        <!-- Styles -->
-        <style>
-            html, body {
-                background-color: #fff;
-                color: #636b6f;
-                font-family: 'Raleway', sans-serif;
-                font-weight: 100;
-                height: 100vh;
-                margin: 0;
-            }
-
-            .full-height {
-                height: 100vh;
-            }
-
-            .flex-center {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
-
-            .position-ref {
-                position: relative;
-            }
-
-            .top-right {
-                position: absolute;
-                right: 10px;
-                top: 18px;
-            }
-
-            .content {
-                text-align: center;
-            }
-
-            .title {
-                font-size: 84px;
-            }
-
-            .links > a {
-                color: #636b6f;
-                padding: 0 25px;
-                font-size: 12px;
-                font-weight: 600;
-                letter-spacing: .1rem;
-                text-decoration: none;
-                text-transform: uppercase;
-            }
-
-            .m-b-md {
-                margin-bottom: 30px;
-            }
-        </style>
     </head>
     <body>
-        <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @auth
-                    <a href="{{ url('/home') }}">Inicio</a>
-                    @else
-                        <a href="{{ route('login') }}">Entrar</a>
-                        <a href="{{ route('register') }}">Register</a>
-                        @endauth
-                </div>
-            @endif
 
-            <div class="content">
-                <div class="title m-b-md">
-                    JUEGOS NACIONALES GUAYAS 2017
-                </div>
 
-                <div class="links">
-                    <a href="https://www.fedeguayas.com.ec">FEDEGUAYAS</a>
+
+
+    {{-------------------------------------------}}
+        <div class="site-wrapper">
+            <div class="site-wrapper-inner">
+                <div class="cover-container">
+                    <div class="masthead clearfix">
+                        <div class="inner">
+                            {{--<h3 class="masthead-brand">Cover</h3>--}}
+
+                            <ul class="nav masthead-nav">
+                                <li class="active">
+                                </li>
+
+
+                                    @if (Route::has('login'))
+
+                                            @auth
+                                <li>
+                                            <a href="{{ url('/home') }}">Inicio</a>
+                                </li>
+                                            @else
+                                        <li>
+                                                <a href="{{ route('login') }}">Entrar</a>
+                                        </li>
+
+                                             {{--<li>   <a href="{{ route('register') }}">Registro</a></li>--}}
+                                                @endauth
+
+                                    @endif
+
+                                <li>
+                                    {{--<a href="#">Contacot</a>--}}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+
+                    <div class="inner cover">
+                        <h1 class="cover-heading">  JUEGOS NACIONALES GUAYAS 2017 </h1>
+
+                        {{--<p class="lead"><a class="btn btn-lg btn-info" href="#">leer mas</a></p>--}}
+                    </div>
+
+
+
+                    <div class="mastfoot">
+                        <div class="inner">
+                            <!-- Validation -->
+                            <p>© 2017 Fedeguayas ~ <a href="https://www.fedeguayas.com.ec/">FDG</a></p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
-
         </div>
     </body>
 </html>

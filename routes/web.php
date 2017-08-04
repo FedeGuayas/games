@@ -20,6 +20,26 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 
-Route::middleware('auth')->prefix('app')->group(function () {
+
+Route::middleware('auth')->prefix('/app')->group(function () {
+
+    Route::get('loadathletes', function () {
+        return view('athletes.load');
+    });
+
+
+    Route::get('/credenciales/athletes','AthleteController@printAthletes')->name('print_athletes');
+    Route::get('/credenciales/get','AthleteController@getCredencials')->name('getCredencials');
+
+    Route::get('/reportes/credenciales/export','AthleteController@exportCredenciales')->name('export-credenciales');
+
+    Route::get('generate', 'HomeController@generate');
+
+    Route::get('/athletes/get','AthleteController@getAllAthletes')->name('getAllAthletes');
+
+    Route::post('/athletes/admin/import','AthleteController@importAthletes')->name('import');
+
     Route::resource('athletes', 'AthleteController');
+
+
 });

@@ -34,6 +34,7 @@
                 <th style="width: 60px">Cédula</th>
                 <th>Provincia</th>
                 <th>Deporte</th>
+                <th>Evento</th>
                 <th width="80">Imp.</th>
 
             </tr>
@@ -47,6 +48,7 @@
                 <th>Cédula</th>
                 <th>Provincia</th>
                 <th>Deporte</th>
+                <th>Evento</th>
                 <th class="non_searchable">Imp.</th>
             </tr>
             </tfoot>
@@ -91,6 +93,7 @@
                     {data: 'document', name: 'athletes.document'},
                     {data: 'provincia', name: 'athletes.provincia'},
                     {data: 'sport', name: 'athletes.sport'},
+                    {data: 'event', name: 'athletes.event'},
                     {data: 'actions', name: 'opciones', orderable: false, searchable: false}
                 ],
                 "language": {

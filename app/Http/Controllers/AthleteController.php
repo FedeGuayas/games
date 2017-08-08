@@ -80,7 +80,7 @@ class AthleteController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         try {
 
             DB::beginTransaction();
@@ -120,10 +120,11 @@ class AthleteController extends Controller
 
             DB::rollback();
 
-            return redirect()->back('');
+//            return redirect()->back()->with('message_danger','Ha ocurrido un error al crear el registro');
+            return redirect()->back()->with('message_danger',$e->getMessage());
         }
 
-        return redirect()->route('athletes.index');
+        return redirect()->route('athletes.index')->with('message','Registro creado correctamente');
 
     }
 
@@ -198,10 +199,10 @@ class AthleteController extends Controller
 
             DB::rollback();
 
-            return redirect()->back('');
+            return redirect()->back()->with('message_danger','Ha ocurrido un error al actualizar el registro');
         }
 
-        return redirect()->route('athletes.index');
+        return redirect()->route('athletes.index')->with('message','Registro actualizado correctamente');
     }
 
     /**

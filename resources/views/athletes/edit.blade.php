@@ -74,7 +74,7 @@
                     <div class="row">
                         <div class="form-group col-md-6">
                             <label for="event">Evento</label>
-                            {!! Form::select('event',['IX JUEGOS DEPORTIVOS NACIONALES PREJUVENILES GUAYAS 2017'=>'IX JUEGOS DEPORTIVOS NACIONALES PREJUVENILES GUAYAS 2017'],$athlete->event,['class'=>'form-control','placeholder'=>'Evento ...','id'=>'event']) !!}
+                            {!! Form::select('event',['IX JUEGOS DEPORTIVOS NACIONALES PREJUVENILES GUAYAS 2017'=>'IX JUEGOS DEPORTIVOS NACIONALES PREJUVENILES GUAYAS 2017','I JUEGOS DEPORTIVOS NACIONALES SUB-23 GUAYAS 2017'=>'I JUEGOS DEPORTIVOS NACIONALES SUB-23 GUAYAS 2017'],$athlete->event,['class'=>'form-control','placeholder'=>'Evento ...','id'=>'event']) !!}
                             {{--<input type="select" class="form-control" id="funcion"  name="funcion" placeholder="provincia" style="text-transform:uppercase">--}}
                         </div>
                         <div class="form-group col-md-6">

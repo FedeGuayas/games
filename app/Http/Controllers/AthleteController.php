@@ -37,8 +37,6 @@ class AthleteController extends Controller
      */
     public function getAllAthletes(Request $request)
     {
-
-
         if ($request->ajax()) {
 
             $atletas = Athlete::query();
@@ -80,7 +78,6 @@ class AthleteController extends Controller
      */
     public function store(Request $request)
     {
-
         try {
 
             DB::beginTransaction();
@@ -120,21 +117,12 @@ class AthleteController extends Controller
 
             DB::rollback();
 
-//            return redirect()->back()->with('message_danger','Ha ocurrido un error al crear el registro');
-            return redirect()->back()->with('message_danger',$e->getMessage());
+            return redirect()->back()->with('message_danger', 'Ha ocurrido un error al crear el registro');
+//            return redirect()->back()->with('message_danger',$e->getMessage());
         }
 
-        return redirect()->route('athletes.index')->with('message','Registro creado correctamente');
+        return redirect()->route('athletes.index')->with('message', 'Registro creado correctamente');
 
-    }
-
-
-    /**
-     * @param Athlete $athlete
-     */
-    public function show($id)
-    {
-        dd($id);
     }
 
     /**
@@ -162,7 +150,6 @@ class AthleteController extends Controller
         try {
 
             DB::beginTransaction();
-
 
             $atleta = Athlete::query()->findOrFail($id);
 
@@ -199,10 +186,10 @@ class AthleteController extends Controller
 
             DB::rollback();
 
-            return redirect()->back()->with('message_danger','Ha ocurrido un error al actualizar el registro');
+            return redirect()->back()->with('message_danger', 'Ha ocurrido un error al actualizar el registro');
         }
 
-        return redirect()->route('athletes.index')->with('message','Registro actualizado correctamente');
+        return redirect()->route('athletes.index')->with('message', 'Registro actualizado correctamente');
     }
 
     /**
@@ -252,7 +239,6 @@ class AthleteController extends Controller
             $data = Excel::load($path, function ($reader) {
             })->get();
 
-
             //LLenar tabla atletas
             $insert = [];
             if (!empty($data) && $data->count()) {
@@ -260,46 +246,42 @@ class AthleteController extends Controller
                     DB::beginTransaction();
 
                     foreach ($data as $key => $value) {
-                        
+
                         $doc = $value->doc_de_ident;
 //                        $subcadena = ".0";
 //                        $posicionsubcadena = strpos ($cadena, $subcadena);
 //                        $doc = substr ($cadena, ($posicionsubcadena+1));
 
                         $insert[] = [
-                                "codigo" => $value->codigo,
-                                "event"=>$value->evento,
-                                "place"=>$value->lugar,
-                                "date_ins"=>$value->fecha_de_inscripcion,
-                                "procedencia"=>$value->participa_por,
-                                "sport"=>$value->deporte,
-                                "document"=>$doc,
-                                "last_name"=>$value->apellidos,
-                                "name"=>$value->nombres,
-                                "gen"=>$value->genero,
-                                "birth_date"=>$value->fecha_de_nacimiento,
-                                "federator_num"=>$value->no_fedenador_ecuador,
-                                "notes"=>$value->observaciones,
-                                "provincia"=>$value->provincia,
-                                "funcion"=>$value->funcion,
-                                "image"=>$doc.'.'.'jpg'
+                            "codigo" => $value->codigo,
+                            "event" => $value->evento,
+                            "place" => $value->lugar,
+                            "date_ins" => $value->fecha_de_inscripcion,
+                            "procedencia" => $value->participa_por,
+                            "sport" => $value->deporte,
+                            "document" => $doc,
+                            "last_name" => $value->apellidos,
+                            "name" => $value->nombres,
+                            "gen" => $value->genero,
+                            "birth_date" => $value->fecha_de_nacimiento,
+                            "federator_num" => $value->no_fedenador_ecuador,
+                            "notes" => $value->observaciones,
+                            "provincia" => $value->provincia,
+                            "funcion" => $value->funcion,
+                            "image" => $doc . '.' . 'jpg'
 //                               "image" => str_replace(',', '.', $value->doc_de_ident),
-                            ];
-
+                        ];
 
                     }
                     if (!empty($insert)) {
-                        foreach (array_chunk($insert,1000) as $data) {
+                        foreach (array_chunk($insert, 1000) as $data) {
 
                             DB::table('athletes')->insert($data);
-
                         }
-
-
                     }
 
                     DB::commit();
-                    return redirect()->back()->with(["message"=>"Registros cargados"]);
+                    return redirect()->back()->with(["message" => "Registros cargados"]);
 
                 } catch (\Exception $e) {
                     DB::rollback();
@@ -330,12 +312,12 @@ class AthleteController extends Controller
 //              else {
 
             $credenciales = Athlete::query()->whereIn('id', $imp_cred)->get();
-$posicion=0;
+            $posicion = 0;
 
             set_time_limit(0);
             ini_set('memory_limit', '1G');
 
-            $pdf = PDF::loadView('reportes.credenciales-pdf', compact('credenciales','posicion'));
+            $pdf = PDF::loadView('reportes.credenciales-pdf', compact('credenciales', 'posicion'));
             return $pdf->stream('Credenciales');//imprime en pantalla
         } else {
             return redirect()->back()->with('message_danger', 'Seleccione los atletas  que desees imprimir sus credenciales');
@@ -359,14 +341,12 @@ $posicion=0;
 
 
     /**
-     * Obtener todos los atltetas para datatables
+     * Obtener todos los atltetas para datatables para la impresion de credenciales
      * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function getCredencials(Request $request)
     {
-
-
         if ($request->ajax()) {
 
             $atletas = Athlete::query();

@@ -33,13 +33,14 @@ Route::middleware('auth')->prefix('/app')->group(function () {
 
     Route::get('/reportes/credenciales/export','AthleteController@exportCredenciales')->name('export-credenciales');
 
-    Route::get('generate', 'HomeController@generate');
-
     Route::get('/athletes/get','AthleteController@getAllAthletes')->name('getAllAthletes');
 
     Route::post('/athletes/admin/import','AthleteController@importAthletes')->name('import');
 
-    Route::resource('athletes', 'AthleteController');
+    Route::resource('athletes', 'AthleteController',['except'=>['show']]);
+
+
+
 
 
 });

@@ -10,11 +10,10 @@
 
                 <div class="panel-body">
 
-                <p>Bienvenido/a, en el menu de la barra de navegación podrá realizar diferentes acciones sobre los atletas. Crear uno nuevo, editar existentes o eliminarlo. Tambien se pueden imprimir las credenciales  </p>
+                <p>Bienvenido/a, en el menú superior podrá realizar diferentes acciones sobre los atletas. Crear uno nuevo, editar existentes o eliminarlo. Tambien se pueden imprimir las credenciales  </p>
                     <strong>Atletas</strong> <p>Listado de todos los atletas, donde podra editar o elimar</p>
-                    <strong>Crear Atletas</strong> <p>En esta opción podra agragar a un atleta a la vez</p>
+                    <strong>Crear Atletas</strong> <p>En esta opción podra agregar a un atleta a la vez</p>
                     <strong>Usuario</strong> <p>En  el menú desplegable aparecerá la opción para salir de sistema</p>
-
 
                 </div>
             </div>

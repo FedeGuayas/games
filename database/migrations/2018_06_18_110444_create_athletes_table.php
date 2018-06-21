@@ -20,7 +20,8 @@ class CreateAthletesTable extends Migration
             $table->string('place')->nullable();//lugar
             $table->date('date_ins')->nullable();//fecha inscripcion
             $table->string('procedencia')->nullable();//participa por
-            $table->string('sport');//deporte
+//            $table->string('sport');//deporte
+            $table->integer('deporte_id')->unsigned()->nullable();//deporte
             $table->char('document');//ci
             $table->string('last_name');//apellidos
             $table->string('name');//nombres
@@ -28,9 +29,12 @@ class CreateAthletesTable extends Migration
             $table->date('birth_date')->nullable();//fecha nacimiento
             $table->string('federator_num')->nullable();//numero federador
             $table->string('notes')->nullable();//observaciones
-            $table->string('provincia');//provincia
-            $table->string('funcion');//??
+//            $table->string('provincia');//provincia
+            $table->integer('provincia_id')->unsigned();//provincia
+            $table->string('funcion');//Deportista, Entrenador
             $table->string('image');//foto del atleta=ci.jpg
+            $table->string('status')->default(\App\Athlete::ATLETA_ACTIVO);
+            $table->string('acreditado')->default(\App\Athlete::ATLETA_NO_ACREDITADO);
 
             $table->timestamps();
         });

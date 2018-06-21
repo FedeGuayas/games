@@ -12,7 +12,7 @@
     </div>
 
     <div class="container">
-        <h4>Atletas</h4>
+        <h4>Credenciales</h4>
         {!! Form::open (['route' => 'export-credenciales','method' => 'GET', 'class'=>'form_noEnter', 'target'=>'_blank'])!!}
         <div class="row">
             <div class="col-lg-6" id="botones_imprimir"></div>
@@ -62,7 +62,7 @@
 
 @endsection
 
-@section('scripts')
+@push('scripts')
 
     <script>
         $(document).ready(function () {
@@ -89,8 +89,8 @@
                     {data: 'name', name: 'athletes.name'},
                     {data: 'last_name', name: 'athletes.last_name'},
                     {data: 'document', name: 'athletes.document'},
-                    {data: 'provincia', name: 'athletes.provincia'},
-                    {data: 'sport', name: 'athletes.sport'},
+                    {data: 'provincia', name: 'provincia.province'},
+                    {data: 'deporte', name: 'deporte.name'},
                     {data: 'actions', name: 'opciones', orderable: false, searchable: false}
                 ],
                 "language": {
@@ -133,7 +133,7 @@
                         if (columnClass !== 'non_searchable') {
                             var input = document.createElement("input");
                             $(input).appendTo($(column.footer()).empty())
-                                .on('keyup', function () {//keypress keyup change
+                                .on('change', function () {//keypress keyup change
                                     column.search($(this).val(), false, false, true).draw();
                                 });
                         }
@@ -158,4 +158,4 @@
     </script>
 
 
-@endsection
+@endpush

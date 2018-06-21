@@ -27,14 +27,27 @@
                 {{$c->image}}
             @else
                 <img src="{{ asset('/uploads/athletes/img/'.$c->image)}}"
-                     style='width: 135px; height: 180px;'>
+                     class="foto_cred">
             @endif
         </div>
         <div class="nombres">{{$c->name}}</div>
         <div class="apellidos">{{$c->last_name}}</div>
         <div class="cedula">{{$c->document}}</div>
-        <div class="provincia">{{$c->provincia}}</div>
-        <div class="deporte">{{$c->sport}}</div>
+        <div class="provincia">
+            @if(!is_null($c->provincia))
+                {{$c->provincia->province}}
+            @else
+                -
+            @endif
+        </div>
+        <div class="deporte">
+            @if(!is_null($c->deporte))
+                {{$c->deporte->name}}
+            @else
+                -
+            @endif
+
+        </div>
     </div>
 
     <?php
@@ -51,14 +64,26 @@
                 {{$c->image}}
             @else
                 <img src="{{ asset('/uploads/athletes/img/'.$c->image)}}"
-                     style='width: 135px; height: 180px;'>
+                     class="foto_cred">
             @endif
         </div>
         <div class="nombres">{{$c->name}}</div>
         <div class="apellidos">{{$c->last_name}}</div>
         <div class="cedula">{{$c->document}}</div>
-        <div class="provincia">{{$c->provincia}}</div>
-        <div class="deporte">{{$c->sport}}</div>
+        <div class="provincia">
+            @if(!is_null($c->provincia))
+                {{$c->provincia->province}}
+            @else
+                -
+            @endif
+        </div>
+        <div class="deporte">
+            @if(!is_null($c->deporte))
+                {{$c->deporte->name}}
+            @else
+                -
+            @endif
+        </div>
     </div>
 
     <?php
@@ -73,14 +98,26 @@
                 {{$c->image}}
             @else
                 <img src="{{ asset('/uploads/athletes/img/'.$c->image)}}"
-                     style='width: 135px; height: 180px;'>
+                     class="foto_cred">
             @endif
         </div>
         <div class="nombres">{{$c->name}}</div>
         <div class="apellidos">{{$c->last_name}}</div>
         <div class="cedula">{{$c->document}}</div>
-        <div class="provincia">{{$c->provincia}}</div>
-        <div class="deporte">{{$c->sport}}</div>
+        <div class="provincia">
+            @if(!is_null($c->provincia))
+                {{$c->provincia->province}}
+            @else
+                -
+            @endif
+        </div>
+        <div class="deporte">
+            @if(!is_null($c->deporte))
+                {{$c->deporte->name}}
+            @else
+                -
+            @endif
+        </div>
     </div>
     <?php
 
@@ -94,14 +131,26 @@
                 {{$c->image}}
             @else
                 <img src="{{ asset('/uploads/athletes/img/'.$c->image)}}"
-                     style='width: 135px; height: 180px;'>
+                     class="foto_cred">
             @endif
         </div>
         <div class="nombres">{{$c->name}}</div>
         <div class="apellidos">{{$c->last_name}}</div>
         <div class="cedula">{{$c->document}}</div>
-        <div class="provincia">{{$c->provincia}}</div>
-        <div class="deporte">{{$c->sport}}</div>
+        <div class="provincia">
+            @if(!is_null($c->provincia))
+                {{$c->provincia->province}}
+            @else
+                -
+            @endif
+        </div>
+        <div class="deporte">
+            @if(!is_null($c->deporte))
+                {{$c->deporte->name}}
+            @else
+                -
+            @endif
+        </div>
     </div>
     {{--<div style="page-break-after: always"></div>--}}
     <?php

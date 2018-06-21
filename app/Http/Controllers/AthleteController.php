@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Athlete;
+use App\Deporte;
+use App\Provincia;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use DB;
@@ -10,7 +12,6 @@ use Datatables;
 use Barryvdh\DomPDF\Facade as PDF;
 use Codedge\Fpdf\Fpdf\Fpdf;
 
-//include_once('../../PDF.php');
 
 class AthleteController extends Controller
 {
@@ -20,7 +21,7 @@ class AthleteController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Vista con la lista de participantes
      *
      * @return \Illuminate\Http\Response
      */
@@ -39,7 +40,9 @@ class AthleteController extends Controller
     {
         if ($request->ajax()) {
 
-            $atletas = Athlete::query();
+            $atletas = Athlete::with('provincia', 'deporte')
+                ->where('athletes.status', '!=', Athlete::ATLETA_INACTIVO)
+                ->select('athletes.*');
 
             $action_buttons = '
                 <a href="{{ route(\'athletes.edit\',[$id] ) }}" style="text-decoration-line: none">
@@ -52,6 +55,29 @@ class AthleteController extends Controller
             //{!! Form::button('<i class="tiny fa fa-trash-o" ></i>',['class'=>'modal-trigger label waves-effect waves-light red darken-1','data-target'=>"modal-delete-[$id]"]) !!}
             return Datatables::eloquent($atletas)
                 ->addColumn('actions', $action_buttons)
+                ->addColumn('provincia', function (Athlete $atleta) {
+                    return $atleta->provincia->province;
+                })
+                ->filterColumn('provincia', function ($query, $keyword) {
+                    $query->whereRaw("provincias.province like ?", ["%{$keyword}%"]);
+                })
+                ->addColumn('deporte', function (Athlete $atleta) {
+                    if (isset($atleta->deporte)) {
+                        return $atleta->deporte->name;
+                    } else return false;
+                })
+                ->filterColumn('deporte', function ($query, $keyword) {
+                    $query->whereRaw("deportes.name like ?", ["%{$keyword}%"]);
+                })
+                ->editColumn('acreditado', function ($atletas) {
+                    if ($atletas->acreditado == Athlete::ATLETA_ACREDITADO) {
+//                        return '<a href="#edit-'.$user->id.'" class="btn btn-xs btn-primary"><i class="glyphicon glyphicon-edit"></i> Edit</a>';
+                        return "SI";
+                    } elseif ($atletas->acreditado == Athlete::ATLETA_NO_ACREDITADO) {
+//                        return "<span class=\"text-success\">NO</span>";
+                        return "NO";
+                    }
+                })
                 ->rawColumns(['actions'])
                 ->make(true);
         }
@@ -67,7 +93,12 @@ class AthleteController extends Controller
      */
     public function create()
     {
-        return view('athletes.create');
+        $provincias = Provincia::all();
+        $list_provincias = $provincias->pluck('province', 'id');
+
+        $deportes = Deporte::where('status', Deporte::DEPORTE_ACTIVO)->get();
+        $list_deportes = $deportes->pluck('name', 'id');
+        return view('athletes.create', compact('list_provincias', 'list_deportes'));
     }
 
     /**
@@ -86,19 +117,22 @@ class AthleteController extends Controller
             $atleta->name = strtoupper($request->input('name'));
             $atleta->last_name = strtoupper($request->input('last_name'));
             $atleta->document = strtoupper($request->input('document'));
-            $atleta->sport = strtoupper($request->input('sport'));
-            $atleta->provincia = strtoupper($request->input('provincia'));
+            $provincia_id = $request->input('provincia_id');
+            $provincia = Provincia::where('id', $provincia_id)->first();
             $atleta->funcion = strtoupper($request->input('funcion'));
-
+            $deporte_id = $request->input('deporte_id');
+            $deporte = Deporte::where('id', $deporte_id)->first();
             $atleta->gen = strtoupper($request->input('gen'));
             $atleta->birth_date = strtoupper($request->input('birth_date'));
-            $atleta->event = strtoupper($request->input('event'));
-            $atleta->date_ins = strtoupper($request->input('date_ins'));
-            $atleta->procedencia = strtoupper($request->input('procedencia'));
-            $atleta->provincia = strtoupper($request->input('provincia'));
             $atleta->notes = strtoupper($request->input('notes'));
-            $atleta->place = strtoupper($request->input('place'));
-
+            $atleta->deporte()->associate($deporte);
+            $atleta->provincia()->associate($provincia);
+            $acreditar = $request->input('acreditar');
+            if ($acreditar == 'on') {
+                $atleta->acreditado = Athlete::ATLETA_ACREDITADO;
+            } else {
+                $atleta->acreditado = Athlete::ATLETA_NO_ACREDITADO;
+            }
 
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
@@ -116,12 +150,11 @@ class AthleteController extends Controller
         } catch (\Exception $e) {
 
             DB::rollback();
-
             return redirect()->back()->with('message_danger', 'Ha ocurrido un error al crear el registro');
 //            return redirect()->back()->with('message_danger',$e->getMessage());
         }
 
-        return redirect()->route('athletes.index')->with('message', 'Registro creado correctamente');
+        return redirect()->route('athletes.index')->with('message', 'Participante creado correctamente');
 
     }
 
@@ -133,9 +166,15 @@ class AthleteController extends Controller
      */
     public function edit($id)
     {
-        $athlete = Athlete::query()->findOrFail($id);
+        $athlete = Athlete::where('id', $id)->first();
 
-        return view('athletes.edit', compact('athlete'));
+        $provincias = Provincia::all();
+        $list_provincias = $provincias->pluck('province', 'id');
+
+        $deportes = Deporte::where('status', Deporte::DEPORTE_ACTIVO)->get();
+        $list_deportes = $deportes->pluck('name', 'id');
+
+        return view('athletes.edit', compact('athlete', 'list_provincias', 'list_deportes'));
     }
 
     /**
@@ -156,18 +195,17 @@ class AthleteController extends Controller
             $atleta->name = strtoupper($request->input('name'));
             $atleta->last_name = strtoupper($request->input('last_name'));
             $atleta->document = strtoupper($request->input('document'));
-            $atleta->sport = strtoupper($request->input('sport'));
-            $atleta->provincia = strtoupper($request->input('provincia'));
+            $provincia_id = $request->input('provincia_id');
+            $provincia = Provincia::where('id', $provincia_id)->first();
             $atleta->funcion = strtoupper($request->input('funcion'));
-
+            $deporte_id = $request->input('deporte_id');
+            $deporte = Deporte::where('id', $deporte_id)->first();
             $atleta->gen = strtoupper($request->input('gen'));
             $atleta->birth_date = strtoupper($request->input('birth_date'));
-            $atleta->event = strtoupper($request->input('event'));
-            $atleta->date_ins = strtoupper($request->input('date_ins'));
-            $atleta->procedencia = strtoupper($request->input('procedencia'));
-            $atleta->provincia = strtoupper($request->input('provincia'));
             $atleta->notes = strtoupper($request->input('notes'));
-            $atleta->place = strtoupper($request->input('place'));
+            $atleta->deporte()->associate($deporte);
+            $atleta->provincia()->associate($provincia);
+            $acreditar = $request->input('acreditar');
 
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
@@ -177,7 +215,13 @@ class AthleteController extends Controller
                 $atleta->image = $name;
             }
 
-            $atleta->save();
+            if ($acreditar == 'on') {
+                $atleta->acreditado = Athlete::ATLETA_ACREDITADO;
+            } else {
+                $atleta->acreditado = Athlete::ATLETA_NO_ACREDITADO;
+            }
+
+            $atleta->update();
 
             DB::commit();
 
@@ -186,7 +230,7 @@ class AthleteController extends Controller
 
             DB::rollback();
 
-            return redirect()->back()->with('message_danger', 'Ha ocurrido un error al actualizar el registro');
+            return redirect()->back()->with('message_danger', 'Ha ocurrido un error al actualizar el participante');
         }
 
         return redirect()->route('athletes.index')->with('message', 'Registro actualizado correctamente');
@@ -206,25 +250,30 @@ class AthleteController extends Controller
 
                 DB::beginTransaction();
 
-                $atleta = Athlete::query()->findOrFail($id);
-                $file = $atleta->image;
-                $filename = public_path() . '/uploads/athletes/img/' . $file;
-                \File::delete($filename);
-                $atleta->delete();
+                $atleta = Athlete::where('id', $id)->first();
+//                $file = $atleta->image;
+//                $filename = public_path() . '/uploads/athletes/img/' . $file;
+//                \File::delete($filename);
+                $atleta->status = Athlete::ATLETA_INACTIVO;
+                $atleta->update();
 
                 DB::commit();
 
             } catch (\Exception $e) {
 
                 DB::rollback();
-                return response()->json(['rep' => 'Ocurrio un error, no se pudo eliminar el registro']);
+                return response()->json(['rep' => 'Ocurrio un error, no se pudo realizar la acción']);
             }
-            return response()->json(['resp' => 'Atleta Eliminado!']);
+            return response()->json(['resp' => 'Atleta inactivo!']);
         }
         return redirect()->route('athletes.index');
 
     }
 
+    public function getImport()
+    {
+        return view('athletes.import');
+    }
 
     /**
      * Importar atletas excell
@@ -253,20 +302,12 @@ class AthleteController extends Controller
 //                        $doc = substr ($cadena, ($posicionsubcadena+1));
 
                         $insert[] = [
-                            "codigo" => $value->codigo,
-                            "event" => $value->evento,
-                            "place" => $value->lugar,
-                            "date_ins" => $value->fecha_de_inscripcion,
-                            "procedencia" => $value->participa_por,
-                            "sport" => $value->deporte,
+                            "deporte_id" => $value->deporte,
                             "document" => $doc,
                             "last_name" => $value->apellidos,
                             "name" => $value->nombres,
                             "gen" => $value->genero,
-                            "birth_date" => $value->fecha_de_nacimiento,
-                            "federator_num" => $value->no_fedenador_ecuador,
-                            "notes" => $value->observaciones,
-                            "provincia" => $value->provincia,
+                            "provincia_id" => $value->provincia,
                             "funcion" => $value->funcion,
                             "image" => $doc . '.' . 'jpg'
 //                               "image" => str_replace(',', '.', $value->doc_de_ident),
@@ -275,13 +316,12 @@ class AthleteController extends Controller
                     }
                     if (!empty($insert)) {
                         foreach (array_chunk($insert, 1000) as $data) {
-
                             DB::table('athletes')->insert($data);
                         }
                     }
 
                     DB::commit();
-                    return redirect()->back()->with(["message" => "Registros cargados"]);
+                    return redirect()->route('getAllAthletes')->with(["message" => "Registros importados"]);
 
                 } catch (\Exception $e) {
                     DB::rollback();
@@ -292,6 +332,62 @@ class AthleteController extends Controller
             }
         }
 
+    }
+
+    /**
+     * Vista de imprimir credenciales
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function printAthletes()
+    {
+        return view('athletes.print');
+    }
+
+    /**
+     * Obtener todos los atltetas para datatables para la impresion de credenciales
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function getCredencials(Request $request)
+    {
+        if ($request->ajax()) {
+
+
+            $atletas = Athlete::with('provincia', 'deporte')
+                ->where('athletes.status', '!=', Athlete::ATLETA_INACTIVO)
+                ->select('athletes.*');
+
+            $action_buttons = '
+                 
+                <a href="#">
+                {!! Form::checkbox(\'imp_cred[]\',$id,false,[\'id\'=>$id]) !!}
+                </a>
+               
+                ';
+
+            return Datatables::eloquent($atletas)
+                ->addColumn('actions', $action_buttons)
+                ->addColumn('provincia', function (Athlete $atleta) {
+                    return $atleta->provincia->province;
+                })
+                ->filterColumn('provincia', function ($query, $keyword) {
+                    $query->whereRaw("provincias.province like ?", ["%{$keyword}%"]);
+                })
+                ->addColumn('deporte', function (Athlete $atleta) {
+                    if (isset($atleta->deporte)) {
+                        return $atleta->deporte->name;
+                    } else return false;
+                })
+                ->filterColumn('deporte', function ($query, $keyword) {
+                    $query->whereRaw("deportes.name like ?", ["%{$keyword}%"]);
+                })
+                ->rawColumns(['actions'])
+                ->make(true);
+
+        }
+
+        return view('athletes.print');
     }
 
     /**
@@ -306,17 +402,10 @@ class AthleteController extends Controller
         $imp_cred = $request->get('imp_cred');
 
         if (!is_null($imp_cred)) {
-//            if (count($imp_cred) > 8) {
-//                return redirect()->back()->with('message_danger', 'No seleccionar mas de 8 inscripciones por pagina a imprimir');
-//            }
-//              else {
-
-            $credenciales = Athlete::query()->whereIn('id', $imp_cred)->get();
+            $credenciales = Athlete::with('provincia', 'deporte')->whereIn('id', $imp_cred)->get();
             $posicion = 0;
-
             set_time_limit(0);
             ini_set('memory_limit', '1G');
-
             $pdf = PDF::loadView('reportes.credenciales-pdf', compact('credenciales', 'posicion'));
             return $pdf->stream('Credenciales');//imprime en pantalla
         } else {
@@ -325,47 +414,156 @@ class AthleteController extends Controller
 
     }
 
-    /**
-     * Imprimir
-     */
 
     /**
-     * Display a listing of the resource.
+     * Vista con la lista de participantes a acreditar
      *
      * @return \Illuminate\Http\Response
      */
-    public function printAthletes()
+    public function indexAcreditar()
     {
-        return view('athletes.print');
+        return view('athletes.acreditar');
     }
 
 
     /**
-     * Obtener todos los atltetas para datatables para la impresion de credenciales
+     * Obtener todos los atltetas para datatables para acreditar
      * @param Request $request
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function getCredencials(Request $request)
+    public function getAllAcreditar(Request $request)
     {
         if ($request->ajax()) {
 
-            $atletas = Athlete::query();
+            $atletas = Athlete::with('provincia', 'deporte')
+                ->where('athletes.status', '!=', Athlete::ATLETA_INACTIVO)
+                ->where('acreditado', Athlete::ATLETA_NO_ACREDITADO)
+                ->select('athletes.*');
 
             $action_buttons = '
                  
-                <a href="!#">
-                {!! Form::checkbox(\'imp_cred[]\',$id,false,[\'id\'=>$id]) !!}
+                <a href="#">
+                {!! Form::checkbox(\'acreditar[]\',$id,false,[\'id\'=>$id]) !!}
                 </a>
                
                 ';
 
-            //{!! Form::button('<i class="tiny fa fa-trash-o" ></i>',['class'=>'modal-trigger label waves-effect waves-light red darken-1','data-target'=>"modal-delete-[$id]"]) !!}
             return Datatables::eloquent($atletas)
                 ->addColumn('actions', $action_buttons)
+                ->addColumn('provincia', function (Athlete $atleta) {
+                    return $atleta->provincia->province;
+                })
+                ->filterColumn('provincia', function ($query, $keyword) {
+                    $query->whereRaw("provincias.province like ?", ["%{$keyword}%"]);
+                })
+                ->addColumn('deporte', function (Athlete $atleta) {
+                    if (isset($atleta->deporte)) {
+                        return $atleta->deporte->name;
+                    } else return false;
+                })
+                ->filterColumn('deporte', function ($query, $keyword) {
+                    $query->whereRaw("deportes.name like ?", ["%{$keyword}%"]);
+                })
                 ->rawColumns(['actions'])
                 ->make(true);
         }
 
-        return view('athletes.print');
+        return view('athletes.acreditar');
     }
+
+    /**
+     * Acreditar participantes seleccionados
+     * @param Request $request
+     * @return $this|\Illuminate\Http\RedirectResponse
+     */
+    public function acreditar(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $acreditar = $request->input('acreditar');
+
+            if (count($acreditar) > 0) {
+                $cont = 0;
+                while ($cont < count($acreditar)) {
+                    $athleta = Athlete::where('id', $acreditar[$cont])->first();
+                    $athleta->acreditado = Athlete::ATLETA_ACREDITADO;
+                    $cont++;
+                    $athleta->update();
+                }
+            } else {
+                return redirect()->back()->with('message_danger', 'Debe seleccionar los participantes que desea acreditar');
+            }
+
+            DB::commit();
+            return redirect()->back()->with('message', 'Participantes acreditados');
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            $message = "Error al acreditadar a los participantes";
+            return redirect()->back()->with('message_danger', $message)->withInput();
+            //return redirect()->back()->with('message_danger',$e->getMessage())->withInput();
+        }
+
+    }
+
+
+    /**
+     * Vista con la lista de participantes a acreditar
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function indexAcreditados()
+    {
+        return view('athletes.acreditados');
+    }
+
+
+    /**
+     * Obtener todos los atltetas para datatables para acreditar
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function getAllAcreditados(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $atletas = Athlete::with('provincia', 'deporte')
+                ->where('athletes.status', '!=', Athlete::ATLETA_INACTIVO)
+                ->where('acreditado', Athlete::ATLETA_ACREDITADO)
+                ->select('athletes.*');
+
+            $action_buttons = '
+                 
+                <a href="!#">
+                {!! Form::checkbox(\'acreditar[]\',$id,false,[\'id\'=>$id]) !!}
+                </a>
+               
+                ';
+
+            return Datatables::eloquent($atletas)
+                ->addColumn('actions', $action_buttons)
+                ->addColumn('provincia', function (Athlete $atleta) {
+                    return $atleta->provincia->province;
+                })
+                ->filterColumn('provincia', function ($query, $keyword) {
+                    $query->whereRaw("provincias.province like ?", ["%{$keyword}%"]);
+                })
+                ->addColumn('deporte', function (Athlete $atleta) {
+                    if (isset($atleta->deporte)) {
+                        return $atleta->deporte->name;
+                    } else return false;
+                })
+                ->filterColumn('deporte', function ($query, $keyword) {
+                    $query->whereRaw("deportes.name like ?", ["%{$keyword}%"]);
+                })
+                ->rawColumns(['actions'])
+                ->make(true);
+        }
+
+        return view('athletes.acreditados');
+    }
+
+
+
 }

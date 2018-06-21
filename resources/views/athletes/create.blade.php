@@ -3,63 +3,60 @@
 @section('content')
 
 
-    <div class="col-sm-6">
+    <div class="container-fluid">
         @include('alert.alert')
 
-        <div class="col-xs-12 col-md-offset-6">
-
+        <div class="col-xs-12 col-md-6 col-md-offset-3 col-lg-8 col-lg-offset-2">
+            <h4 class="page-header">Crear participante</h4>
             <form action="{{route('athletes.store')}}" method="POST" enctype="multipart/form-data">
                 {{ csrf_field() }}
 
                 <div class="panel panel-success">
-                    <div class="panel-heading">Crear Atleta</div>
 
                     <div class="panel-body">
 
                         <div class="row">
                             <div class="form-group col-md-6">
-                                <label for="name">Nombres</label>
+                                <label for="name">Nombres *</label>
                                 <input type="text" class="form-control" id="name" name="name" placeholder="Nombres"
-                                       autofocus style="text-transform:uppercase">
+                                       autofocus style="text-transform:uppercase" required>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="last_name">Apellidos</label>
+                                <label for="last_name">Apellidos *</label>
                                 <input type="text" class="form-control" id="last_name" name="last_name"
-                                       placeholder="Apellidos" style="text-transform:uppercase">
+                                       placeholder="Apellidos" style="text-transform:uppercase" required>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="form-group col-md-6">
-                                <label for="document">CI</label>
+                                <label for="document">CI *</label>
                                 <input type="text" class="form-control" id="document" name="document"
-                                       placeholder="Documento de Identidad" style="text-transform:uppercase">
+                                       placeholder="Documento de Identidad" style="text-transform:uppercase" required>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="provincia">Provincia</label>
-                                <input type="text" class="form-control" id="provincia" name="provincia"
-                                       placeholder="provincia" style="text-transform:uppercase">
+                                <label for="provincia">Provincia *</label>
+                                {!! Form::select('provincia_id',$list_provincias,null,['class'=>'form-control','placeholder'=>'Seleccione ...','id'=>'provincia_id','value'=>"{{ old('provincia_id') }}",'required']) !!}
                             </div>
-
                         </div>
+
                         <div class="row">
                             <div class="form-group col-md-6">
-                                <label for="funcion">Función</label>
+                                <label for="funcion">Función *</label>
                                 <input type="text" class="form-control" id="funcion" name="funcion"
-                                       placeholder="Función" style="text-transform:uppercase">
+                                       placeholder="Función" style="text-transform:uppercase" aria-describedby="helpFuncion" required>
+                                <span id="helpFuncionk" class="help-block">Ejemplo: Deportista, Entrenador, etc.</span>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="sport">Deporte</label>
-                                <input type="text" class="form-control" id="sport" name="sport" placeholder="Deporte"
-                                       style="text-transform:uppercase">
+                                <label for="deporte_id">Deporte *</label>
+                                {!! Form::select('deporte_id',$list_deportes,null,['class'=>'form-control','placeholder'=>'Seleccione ...','id'=>'deporte_id','value'=>"{{ old('deporte_id') }}",'required']) !!}
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="form-group col-md-6">
-                                <label for="gen">Sexo</label>
-                                {!! Form::select('gen',['M'=>'Masculino','F'=>'Femenino'],null,['class'=>'form-control','placeholder'=>'Sexo ...','id'=>'gen']) !!}
-                                {{--<input type="select" class="form-control" id="funcion"  name="funcion" placeholder="provincia" style="text-transform:uppercase">--}}
+                                <label for="gen">Sexo *</label>
+                                {!! Form::select('gen',['M'=>'Masculino','F'=>'Femenino'],null,['class'=>'form-control','placeholder'=>'Sexo ...','id'=>'gen','required']) !!}
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="birth_date">Fecha de Nacimiento</label>
@@ -67,30 +64,30 @@
                                        style="text-transform:uppercase">
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="form-group col-md-6">
-                                <label for="event">Evento</label>
-                                {!! Form::select('event',['IX JUEGOS DEPORTIVOS NACIONALES PREJUVENILES GUAYAS 2017'=>'IX JUEGOS DEPORTIVOS NACIONALES PREJUVENILES GUAYAS 2017','I JUEGOS DEPORTIVOS NACIONALES SUB-23 GUAYAS 2017'=>'I JUEGOS DEPORTIVOS NACIONALES SUB-23 GUAYAS 2017'],null,['class'=>'form-control','placeholder'=>'Evento ...','id'=>'event']) !!}
+                        {{--<div class="row">--}}
+                            {{--<div class="form-group col-md-6">--}}
+                                {{--<label for="event">Evento</label>--}}
+                                {{--{!! Form::select('event',['VIII JUEGOS DEPORTIVOS NACIONALES JUVENILES 2018'=>'VIII JUEGOS DEPORTIVOS NACIONALES JUVENILES 2018'],null,['class'=>'form-control','placeholder'=>'Evento ...','id'=>'event']) !!}--}}
                                 {{--<input type="select" class="form-control" id="funcion"  name="funcion" placeholder="provincia" style="text-transform:uppercase">--}}
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="date_ins">Fecha de Inscripción</label>
-                                <input type="date" class="form-control" id="date_ins" name="date_ins"
-                                       style="text-transform:uppercase">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-md-6">
-                                <label for="procedencia">Procedencia</label>
-                                <input type="text" class="form-control" id="procedencia" name="procedencia"
-                                       placeholder="Institución que representa" style="text-transform:uppercase">
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="provincia">Provincia</label>
-                                <input type="text" class="form-control" id="provincia" name="provincia"
-                                       placeholder="Provincia" style="text-transform:uppercase">
-                            </div>
-                        </div>
+                            {{--</div>--}}
+                            {{--<div class="form-group col-md-6">--}}
+                                {{--<label for="date_ins">Fecha de Inscripción</label>--}}
+                                {{--<input type="date" class="form-control" id="date_ins" name="date_ins"--}}
+                                       {{--style="text-transform:uppercase">--}}
+                            {{--</div>--}}
+                        {{--</div>--}}
+                        {{--<div class="row">--}}
+                            {{--<div class="form-group col-md-6">--}}
+                                {{--<label for="procedencia">Procedencia</label>--}}
+                                {{--<input type="text" class="form-control" id="procedencia" name="procedencia"--}}
+                                       {{--placeholder="Institución que representa" style="text-transform:uppercase">--}}
+                            {{--</div>--}}
+                            {{--<div class="form-group col-md-6">--}}
+                                {{--<label for="provincia">Provincia</label>--}}
+                                {{--<input type="text" class="form-control" id="provincia" name="provincia"--}}
+                                       {{--placeholder="Provincia" style="text-transform:uppercase">--}}
+                            {{--</div>--}}
+                        {{--</div>--}}
                         <div class="row">
                             <div class="form-group col-md-6">
                                 {!! Form::label('notes','Observaciones:') !!}
@@ -99,16 +96,18 @@
                             <div class="form-group col-md-6">
                                 <label for="image">Foto</label>
                                 <input type="file" id="image" name="image">
-                                <p class="help-block">Foto del Atleta.</p>
+                                <p class="help-block">Foto del Participante.</p>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="form-group col-md-6">
-                                <label for="place">Lugar</label>
-                                <input type="text" class="form-control" id="place" name="place"
-                                       placeholder="Lugar de procedencia" style="text-transform:uppercase">
+                            <div class="form-group col-md-6 ">
+                                <label>
+                                    <input type="checkbox" name="acreditar" id="acreditar" > Acreditar
+                                </label>
                             </div>
+                        </div>
+                        <div class="row">
                             <div class="form-group col-md-6">
                                 <button type="submit" class="btn btn-success">Guardar</button>
                                 <button type="reset" class="btn btn-danger">Cancelar</button>
@@ -117,8 +116,6 @@
                                 </a>
                             </div>
                         </div>
-
-
 
                     </div>
                 </div>

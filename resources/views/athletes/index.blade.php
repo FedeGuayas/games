@@ -2,7 +2,7 @@
 
 @section('content')
 
-
+    <div class="container-fluid">
 
     <div class="row">
         <div class="col-md-6 col-md-offset-2">
@@ -11,11 +11,11 @@
         </div>
     </div>
 
-    <div class="container">
-        <h4>Atletas</h4>
+        <h4 class="page-header">Listado de participantes</h4>
         <div class="row">
             <div class="col-lg-6" id="botones_imprimir"></div>
         </div>
+        <div class="col-xs-12 col-md-10 col-md-offset-1">
         <table class="table table-striped table-bordered table-condensed table-hover table-responsive"
                id="atletas_table" cellspacing="0" style="display: none;overflow: auto; font-size: 11px;" width="100%">
             <thead>
@@ -27,8 +27,8 @@
                 <th style="width: 60px">Cédula</th>
                 <th>Provincia</th>
                 <th>Deporte</th>
+                <th width="50">Acreditado</th>
                 <th width="80">Acción</th>
-
             </tr>
             </thead>
             <tfoot>
@@ -40,14 +40,12 @@
                 <th>Cédula</th>
                 <th>Provincia</th>
                 <th>Deporte</th>
+                <th>Acreditado</th>
                 <th class="non_searchable">Acción</th>
             </tr>
             </tfoot>
         </table>
-
-    </div>
-
-
+</div>
     <div class="animationload" id="loading">
         <div class="osahanloading"></div>
     </div>
@@ -55,16 +53,17 @@
     {!! Form::open(['route'=>['athletes.destroy',':ID'],'method'=>'DELETE','id'=>'form-delete']) !!}
     {!! Form::close() !!}
 
+    </div>
 @endsection
 
 
-@section('scripts')
+@push('scripts')
 
     <script>
         $(document).ready(function () {
 
             $(".form_noEnter").keypress(function (e) {
-                if (e.width == 13) {
+                if (e.which === 13) {
                     return false;
                 }
             });
@@ -85,8 +84,9 @@
                     {data: 'name', name: 'athletes.name'},
                     {data: 'last_name', name: 'athletes.last_name'},
                     {data: 'document', name: 'athletes.document'},
-                    {data: 'provincia', name: 'athletes.provincia'},
-                    {data: 'sport', name: 'athletes.sport'},
+                    {data: 'provincia', name: 'provincia.province'},
+                    {data: 'deporte', name: 'deporte.name'},
+                    {data: 'acreditado', name: 'athletes.acreditado',orderable: false, searchable: false},
                     {data: 'actions', name: 'opciones', orderable: false, searchable: false}
                 ],
                 "language": {
@@ -129,7 +129,7 @@
                         if (columnClass !== 'non_searchable') {
                             var input = document.createElement("input");
                             $(input).appendTo($(column.footer()).empty())
-                                .on('keyup', function () {//keypress keyup change
+                                .on('change', function () {//keypress keyup change
                                     column.search($(this).val(), false, false, true).draw();
                                 });
                         }
@@ -143,8 +143,6 @@
 
         });
 
-
-
         function eliminar(btn) {
 
             var id = btn.value;
@@ -154,8 +152,8 @@
             var route=form.attr('action').replace(':ID',id);
 
             swal({
-                    title: "Confirme para eliminar al atleta",
-                    text: "Esta acción no se podrá deshacer!",
+                    title: "Confirme para eliminar",
+                    text: "El registro pasara a un estado inactivo!",
                     type: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#DD6B55",
@@ -199,4 +197,4 @@
     </script>
 
 
-@endsection
+@endpush

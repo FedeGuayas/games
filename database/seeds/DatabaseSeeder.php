@@ -12,5 +12,18 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // $this->call(UsersTableSeeder::class);
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+
+        \App\User::truncate();
+        \App\Residencia::truncate();
+        \App\Provincia::truncate();
+        \App\Deporte::truncate();
+
+
+        $this->call(UserTableSeeder::class);
+        $this->call(ProvinciaTableSeeder::class);
+        $this->call(DeporteTableSeeder::class);
+        $this->call(ResidenciaTableSeeder::class);
+
     }
 }

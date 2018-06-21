@@ -24,7 +24,7 @@
                             <p class="help-block">Archivo excell con todos los atletas. Esto se debe realizar una sola vez</p>
                         </div>
 
-                        <button type="submit" class="btn btn-danger">Cargar</button>
+                        <button type="submit" class="btn btn-danger" id="cargar">Cargar</button>
 
 
                     </div>
@@ -35,3 +35,18 @@
 
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function () {
+
+        $('form').submit(function() {
+            $('#cargar').prop('disabled',true);
+//            $(this).find("button[type='submit']").prop('disabled',true);
+        });
+
+    });
+
+</script>
+
+@endpush

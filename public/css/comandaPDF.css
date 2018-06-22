@@ -35,10 +35,55 @@ footer {
     /*background-color: #03a9f4;*/
 }
 
+.logos_container {
+    width: 100%;
+    left: 0;
+    top: 0;
+    right: 0;
+    height:40px;
+}
+
+.logos_container::after {
+    clear: both;
+    display: table;
+}
+
+/*superior izquierda*/
+.logo_juegos{
+    width: auto;
+    /*height: 40px; */
+    position: absolute;
+    top:  -15px;
+    left: 0;
+    /*width: auto;*/
+    height: 100%;
+    /*display:inline-block;*/
+    /*position: absolute;*/
+   /*top: 0;*/
+    /*left: 0 ;*/
+}
+
+/*centro*/
+.logo_cear{
+    width: auto;
+    height: 100%;
+    position: absolute;
+    top:-15px;
+    left:400px;
+}
+
+
+/*derecha*/
+.logo_fdg{
+    width: auto;
+    height: 100%;
+    position: absolute;
+    top:-15px;
+    right:135px;
+}
 
 /*footer .pagenum:before {*/
-    /*content: counter(page, decimal);*/
-    /*content: "Página " counter(page) " de " counter(pages);*/
+    /*content: "Página " counter(page);*/
 /*}*/
 
 
@@ -48,3 +93,4 @@ page-break-after: always;
 /*page-break-before: always;*/
 
 }
+

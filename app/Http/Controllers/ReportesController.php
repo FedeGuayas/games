@@ -26,8 +26,6 @@ class ReportesController extends Controller
 //            return back()->with('message_danger','Debe sleccionar la fecha de impresión')->withInput();
 //        }
 
-
-
 //        $date = $request->input('date');
         $evento_id = $request->input('evento_id');
 
@@ -76,13 +74,10 @@ class ReportesController extends Controller
             set_time_limit(0);
             ini_set('memory_limit', '1G');
 
-            for($i=0;$i<$impresiones;$i++)
-            {
-                $date= $diasArray[$i];
 
-                $pdf = PDF::loadView('reportes.comandas-pdf', compact('lista', 'date','tipo','evento','provincia','deporte','residencia','pdf'));
+            $pdf = PDF::loadView('reportes.comandas-pdf', compact('lista', 'impresiones','diasArray','tipo','evento','provincia','deporte','residencia','pdf'));
 
-            }
+
 
 //            try {
 //                $pdf->save(storage_path('Comanda.pdf'));

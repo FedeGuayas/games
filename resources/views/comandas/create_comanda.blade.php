@@ -26,10 +26,6 @@
                             <label for="residencia_id">Residencia *</label>
                             {!! Form::select('residencia_id',['placeholder'=>'Seleccione residencia...'],null,['class'=>'form-control','id'=>'residencia_id','required']) !!}
                         </div>
-                        {{--<div class="form-group col-md-2">--}}
-                            {{--<label for="tipo">Tipo *</label>--}}
-                            {{--{!! Form::select('tipo',['H'=>'HOSPEDAJE','D'=>'DESAYUNO','A'=>'ALMUERZO','M'=>'MERIENDA'],null,['class'=>'form-control','placeholder'=>'Seleccione ...','id'=>'tipo','required']) !!}--}}
-                        {{--</div>--}}
                     </div>
 
                     <div class="row">
@@ -47,8 +43,6 @@
                 </div>
             </div>
 
-
-            {{--{!! Form::close() !!}--}}
         </div>
 
     </div>

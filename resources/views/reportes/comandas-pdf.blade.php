@@ -10,6 +10,7 @@
 
 
 <body>
+@foreach($diasArray as $index=>$dia)
 
 <header>
     <h1 style="margin-top: -20px;">SECRETARIA NACIONAL DEL DEPORTE</h1>
@@ -18,7 +19,7 @@
     <h1 class="tipo">COMANDA DE {{$tipo}}</h1>
     {{--<h4 style="margin-top: 0">PERÍODO DE ALOJAMIENTO: DESDE EL {{$evento->date_start}} AL {{$evento->date_end}}</h4>--}}
     <h4 style="margin-top: 0">PERÍODO DE ALOJAMIENTO: DESDE EL {{($evento->date_start)}} AL {{$evento->date_end}}</h4>
-    <h4>DÍA DE ALOJAMIENTO: {{$date->format('Y-m-d')}}</h4>
+    <h4>DÍA DE ALOJAMIENTO: {{$diasArray[$index]->format('Y-m-d')}}</h4>
     <h4>NÓMINA DE LA DELEGACIÓN PARTICIPANTE DE LA PROVINCIA DE: &nbsp;&nbsp;&nbsp;&nbsp; <span style="border: 1px solid; margin-right: 0;">{{$provincia->province}}</span> </h4>
 </header>
 
@@ -62,26 +63,27 @@
                 </tr>
             @endforeach
         </tbody>
-    </table>
+    </table>    
 </div>
 
 {{--numero de pagina--}}
-<script type='text/php'>
-      if ( isset($pdf) ) {
-        $x = 740;
-        $y = 532;
-        $text = "Página {PAGE_NUM} de {PAGE_COUNT}";
-        $font = $fontMetrics->get_font("Arial", "bold");
-        $size = 12;
-        $color = array(0,0,0);
-        $word_space = 0.0;  //  default
-        $char_space = 0.0;  //  default
-        $angle = 0.0;   //  default
-        $pdf->page_text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
-    }
+{{--<script type='text/php'>--}}
+      {{--if ( isset($pdf) ) {--}}
+        {{--$x = 740;--}}
+        {{--$y = 532;--}}
+        {{--$text = "Página {PAGE_NUM} de {PAGE_COUNT}";--}}
+        {{--$font = $fontMetrics->get_font("Arial", "bold");--}}
+        {{--$size = 12;--}}
+        {{--$color = array(0,0,0);--}}
+        {{--$word_space = 0.0;  //  default--}}
+        {{--$char_space = 0.0;  //  default--}}
+        {{--$angle = 0.0;   //  default--}}
+        {{--$pdf->page_text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);--}}
+    {{--}--}}
 
-    </script>
-
+    {{--</script>--}}
+<div class="page-break"></div>
+    @endforeach
 
 </body>
 </html>

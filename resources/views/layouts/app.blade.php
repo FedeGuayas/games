@@ -96,7 +96,7 @@
                             Eventos <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="#" >Todos <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></a></li>
+                            <li><a href="{{route('events.index')}}" >Todos <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></a></li>
                             <li><a href="{{route('events.create')}}" >Crear Nuevo <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
                             <li><a href="{{route('events.createComanda')}}" >Comandas
                                     <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>/

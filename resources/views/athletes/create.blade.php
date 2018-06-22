@@ -101,7 +101,11 @@
                         </div>
 
                         <div class="row">
-                            <div class="form-group col-md-6 ">
+                            <div class="form-group col-md-3">
+                                <label for="status">Estado</label>
+                                {!! Form::select('status',['A'=>'ACTIVO','S'=>'SUPLENTE'],'A',['class'=>'form-control','id'=>'status','required']) !!}
+                            </div>
+                            <div class="form-group col-md-3 ">
                                 <label>
                                     <input type="checkbox" name="acreditar" id="acreditar" > Acreditar
                                 </label>

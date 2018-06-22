@@ -47,8 +47,8 @@ body {
 
 .caja-ti {
     position: fixed;
-    top: 26px; /*[wherever you want it]*/
-    left: 18px; /*[wherever you want it]*/
+    top: 15px; /*[wherever you want it]*/
+    left: 11px; /*[wherever you want it]*/
     width: 378px;
     height: 532px;
     /*border: 1px solid #000000;*/
@@ -59,7 +59,7 @@ body {
 
 .caja-bi {
     position: fixed;
-    top: 558px; /*[wherever you want it]*/
+    top: 565px; /*[wherever you want it]*/
     left: 18px; /*[wherever you want it]*/
     width: 378px;
     height: 535px;
@@ -72,8 +72,8 @@ body {
 
 .caja-td {
     position: fixed;
-    top: 26px; /*[wherever you want it]*/
-    right: 18px; /*[wherever you want it]*/
+    top: 15px; /*[wherever you want it]*/
+    right: 11px; /*[wherever you want it]*/
     width: 378px;
     height: 532px;
     /*border: 1px solid #000000;*/
@@ -85,7 +85,7 @@ body {
 
 .caja-bd {
     position: fixed;
-    top: 558px; /*[wherever you want it]*/
+    top: 565px; /*[wherever you want it]*/
     right: 18px; /*[wherever you want it]*/
     width: 378px;
     height: 535px;
@@ -110,7 +110,7 @@ body {
 
 .l-foto{
     position: relative;
-    top: 183px;
+    top: 186px;
     left: 11px;
     width: 139px;
     height: 177px;
@@ -171,7 +171,7 @@ body {
 
 .provincia {
     position: absolute;
-    top: 330px;
+    top: 336px;
     left: 175px;
     width: 207px;
     height: 26px;
@@ -184,7 +184,7 @@ body {
 
 .deporte {
     position: absolute;
-    top: 370px;
+    top: 376px;
     left: 175px;
     width: 207px;
     height: 26px;

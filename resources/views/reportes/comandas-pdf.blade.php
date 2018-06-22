@@ -18,7 +18,7 @@
     <h1 class="tipo">COMANDA DE {{$tipo}}</h1>
     {{--<h4 style="margin-top: 0">PERÍODO DE ALOJAMIENTO: DESDE EL {{$evento->date_start}} AL {{$evento->date_end}}</h4>--}}
     <h4 style="margin-top: 0">PERÍODO DE ALOJAMIENTO: DESDE EL {{($evento->date_start)}} AL {{$evento->date_end}}</h4>
-    <h4>DÍA DE ALOJAMIENTO: {{$date}}</h4>
+    <h4>DÍA DE ALOJAMIENTO: {{$date->format('Y-m-d')}}</h4>
     <h4>NÓMINA DE LA DELEGACIÓN PARTICIPANTE DE LA PROVINCIA DE: &nbsp;&nbsp;&nbsp;&nbsp; <span style="border: 1px solid; margin-right: 0;">{{$provincia->province}}</span> </h4>
 </header>
 

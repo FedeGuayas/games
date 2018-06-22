@@ -7,6 +7,7 @@ use App\Deporte;
 use App\Event;
 use App\Provincia;
 use App\Residencia;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
 
@@ -19,21 +20,27 @@ class ReportesController extends Controller
      */
     public function comandaPDF(Request $request)
     {
+//        $date = $request->input('date');
+//
+//        if (!isset($date)){
+//            return back()->with('message_danger','Debe sleccionar la fecha de impresión')->withInput();
+//        }
 
-        $provincia_id = $request->input('provincia_id');
-        $deporte_id = $request->input('deporte_id');
-        $residencia_id = $request->input('residencia_id');
-        $tipo = $request->input('tipo');
-        $date = $request->input('date');
+
+
+//        $date = $request->input('date');
         $evento_id = $request->input('evento_id');
 
         $seleccionados = $request->input('seleccionar');
 
-        $provincia = Provincia::where('id', $provincia_id)->first();
-        $deporte = Deporte::where('id', $deporte_id)->first();
-        $residencia = Residencia::where('id', $residencia_id)->first();
+//
+//
+//
         $evento = Event::where('id', $evento_id)->first();
-
+        $provincia = Provincia::where('id', $evento->provincia_id)->first();
+        $deporte = Deporte::where('id', $evento->deporte_id)->first();
+        $residencia = Residencia::where('id', $evento->residencia_id)->first();
+        $tipo = $evento->tipo;
         if ($tipo == 'H') {
             $tipo = 'HOSPEDAJE';
         } elseif ($tipo == 'A') {
@@ -44,25 +51,49 @@ class ReportesController extends Controller
             $tipo='MERIENDA';
         }
 
+        //lista de atletas incluidos en el evento
+        $lista = AthleteEvent::from('athlete_event as ae')
+            ->join('athletes as a', 'a.id', '=', 'ae.athlete_id')
+            ->where('ae.event_id', $evento->id)
+            ->whereIn('a.id', $seleccionados)
+            ->select('a.id', 'a.name', 'a.last_name', 'a.document', 'a.gen', 'a.funcion')
+            ->orderBy('a.last_name')
+            ->get();
 
-        if (isset($evento)){
-            $lista = AthleteEvent::from('athlete_event as ae')
-                ->join('athletes as a', 'a.id', '=', 'ae.athlete_id')
-                ->where('ae.event_id', $evento->id)
-                ->whereIn('a.id', $seleccionados)
-                ->select('a.id', 'a.name', 'a.last_name', 'a.document', 'a.gen', 'a.funcion')
-                ->get();
-        }else {
-            $lista=[];
+        $dia_inicio=Carbon::parse($evento->date_start);
+        $dia_fin=Carbon::parse($evento->date_end);
+
+        $cantidad_dias=$dia_fin->diffInDays($dia_inicio)+1; //25 al 29 = 5 dias
+
+        $diasArray=[];
+        for($i=0; $i<$cantidad_dias; ++$i){
+            $diasArray[] = $dia_inicio->copy()->addDays($i);
         }
 
-        if (count($lista)>0) {
+        $impresiones=count($diasArray);
 
+        if (count($lista)>0 && $impresiones>0) {
             set_time_limit(0);
             ini_set('memory_limit', '1G');
-            $pdf = PDF::loadView('reportes.comandas-pdf', compact('lista', 'date','tipo','evento','provincia','deporte','residencia','pdf'));
+
+            for($i=0;$i<$impresiones;$i++)
+            {
+                $date= $diasArray[$i];
+
+                $pdf = PDF::loadView('reportes.comandas-pdf', compact('lista', 'date','tipo','evento','provincia','deporte','residencia','pdf'));
+
+            }
+
+//            try {
+//                $pdf->save(storage_path('Comanda.pdf'));
+//            }catch (\Exception $e){
+//
+//            }
+//            return response()->download(storage_path('Comanda.pdf'));
+
 
             return $pdf->setPaper('a4', 'landscape')->setWarnings(false)->stream('Comanda');//imprime en pantalla
+
         } else {
             return redirect()->back()->with('message_danger', 'Seleccione las personas que desea incluir en la comanda');
         }

@@ -14,14 +14,56 @@ use Illuminate\Support\Facades\DB;
 class EventController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Vista con la lista de participantes
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-
+        return view('eventos.index');
     }
+
+
+    /**
+     * Obtener todos los eventos para datatables
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function getAllEvents(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $eventos = Event::from('events as e')
+                ->join('deportes as d','d.id','=','e.deporte_id')
+                ->join('provincias as p','p.id','=','e.provincia_id')
+                ->join('residencias as r','r.id','=','e.residencia_id')
+                ->where('e.status', '!=', Event::EVENTO_ACTIVO)
+                ->select('e.*','d.name','p.province','r.name');
+
+            $action_buttons = '
+                <a href="{{ route(\'events.edit\',[$id] ) }}" style="text-decoration-line: none">
+                    <button class="btn-xs btn-success"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
+                </a>
+                 {!! Form::button(\'<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>\',[\'class\'=>\'btn-xs btn-danger\',\'value\'=>$id,\'onclick\'=>\'eliminar(this)\']) !!}
+               
+                ';
+
+            //{!! Form::button('<i class="tiny fa fa-trash-o" ></i>',['class'=>'modal-trigger label waves-effect waves-light red darken-1','data-target'=>"modal-delete-[$id]"]) !!}
+            return Datatables::eloquent($eventos)
+                ->addColumn('actions', $action_buttons)
+//                ->addColumn('provincia', function (Athlete $atleta) {
+//                    return $atleta->provincia->province;
+//                })
+//                ->filterColumn('provincia', function ($query, $keyword) {
+//                    $query->whereRaw("provincias.province like ?", ["%{$keyword}%"]);
+//                })
+                ->rawColumns(['actions'])
+                ->make(true);
+        }
+
+        return view('eventos.index');
+    }
+
 
     /**
      * Vista para crear nuevo evento.
@@ -144,7 +186,6 @@ class EventController extends Controller
      */
     public function countAtletas(Request $request)
     {
-
         if ($request->ajax()) {
 
             $provincia_id = $request->input('provincia_id');
@@ -170,7 +211,6 @@ class EventController extends Controller
         }
 
     }
-
 
     /**
      * Obtengo los atletas de una provincia y deporte determinado
@@ -216,16 +256,13 @@ class EventController extends Controller
      */
     public function createComanda()
     {
-        $provincias = Provincia::all();
+        $provincias = Event::from('events as e')
+            ->join('provincias as p','p.id','=','e.provincia_id')
+             ->select('p.province','p.id')
+            ->get();
         $list_provincias = $provincias->pluck('province', 'id');
 
-        $deportes = Deporte::where('status', Deporte::DEPORTE_ACTIVO)->get();
-        $list_deportes = $deportes->pluck('name', 'id');
-
-        $residencias = Residencia::where('status', Residencia::RESIDENCIA_ACTIVO)->get();
-        $list_residencias = $residencias->pluck('name', 'id');
-
-        return view('comandas.create_comanda', compact('list_provincias', 'list_deportes', 'list_residencias'));
+        return view('comandas.create_comanda', compact('list_provincias'));
     }
 
 
@@ -234,7 +271,96 @@ class EventController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function listPersonasComandas(Request $request)
+    public function listPersonasComandas(Request $request,$id)
+    {
+//        $date = $request->input('date');
+
+        $evento=Event::where('id',$id)
+//            ->where([
+//                ['date_start', '<=', $date],
+//                ['date_end', '>=', $date],
+//            ])
+            ->first();
+
+        if (isset($evento)){
+            $lista = AthleteEvent::from('athlete_event as ae')
+                ->join('athletes as a', 'a.id', '=', 'ae.athlete_id')
+                ->where('ae.event_id', $evento->id)
+                ->select('a.id', 'a.name', 'a.last_name', 'a.document', 'a.gen', 'a.funcion')
+                ->orderBy('a.last_name')
+                ->get();
+        }
+
+//            $provincia_id = $request->input('provincia_id');
+//            $deporte_id = $request->input('deporte_id');
+//            $residencia_id = $request->input('residencia_id');
+//            $tipo = $request->input('tipo');
+//            $date = $request->input('date');
+
+//            $provincia = Provincia::where('id', $provincia_id)->first();
+//            $deporte = Deporte::where('id', $deporte_id)->first();
+//            $residencia = Residencia::where('id', $residencia_id)->first();
+
+            return view('comandas.list', compact('lista','evento'));
+
+
+
+    }
+
+
+    /**
+     * Obtener los deportes para una provincia en el evento select dinamico
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getDeportes(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $provincia_id=$request->input('provincia_id');
+
+        $deportes=Event::from('events as e')
+            ->join('deportes as d','d.id','=','e.deporte_id')
+            ->where('provincia_id',$provincia_id)
+            ->select('d.id','d.name')
+            ->distinct()
+            ->get();
+        ;
+            return response()->json($deportes);
+        }
+    }
+
+    /**
+     * Obtener las residencias para una provincia y deporte en el evento select dinamico
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getResidencia(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $provincia_id=$request->input('provincia_id');
+            $deporte_id=$request->input('deporte_id');
+
+            $residencias=Event::from('events as e')
+                ->join('residencias as r','r.id','=','e.residencia_id')
+                ->where('e.provincia_id',$provincia_id)
+                ->where('e.deporte_id',$deporte_id)
+                ->select('r.id','r.name')
+                ->distinct()
+                ->get();
+            ;
+            return response()->json($residencias);
+        }
+
+    }
+
+    /**
+     * Obtengo los eventos para la comandas
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getEventos(Request $request)
     {
 
         if ($request->ajax()) {
@@ -242,39 +368,20 @@ class EventController extends Controller
             $provincia_id = $request->input('provincia_id');
             $deporte_id = $request->input('deporte_id');
             $residencia_id = $request->input('residencia_id');
-            $tipo = $request->input('tipo');
-            $date = $request->input('date');
 
-            $provincia = Provincia::where('id', $provincia_id)->first();
-            $deporte = Deporte::where('id', $deporte_id)->first();
-            $residencia = Residencia::where('id', $residencia_id)->first();
-
-
-            $evento = Event::
-            where('provincia_id', $provincia_id)
+            $evento = Event::from('events as e')
+                ->join('provincias as p','p.id','=','e.provincia_id')
+                ->join('deportes as d','d.id','=','e.deporte_id')
+                ->join('residencias as r','r.id','=','e.residencia_id')
+                ->where('provincia_id', $provincia_id)
                 ->where('deporte_id', $deporte_id)
                 ->where('residencia_id', $residencia_id)
-                ->where('tipo', $tipo)
-                ->where([
-                    ['date_start', '<=', $date],
-                    ['date_end', '>=', $date],
-                ])
-//               ->whereBetween('creado', [DATE_FORMAT($start), DATE_FORMAT($end)]);
-                ->first();
-
-            if (isset($evento)){
-                $lista = AthleteEvent::from('athlete_event as ae')
-                    ->join('athletes as a', 'a.id', '=', 'ae.athlete_id')
-                    ->where('ae.event_id', $evento->id)
-                    ->select('a.id', 'a.name', 'a.last_name', 'a.document', 'a.gen', 'a.funcion')
-                    ->get();
-            }else {
-                $lista=[];
-            }
-
-            return view('comandas.list', compact('lista','evento'));
+                ->where('e.status',Event::EVENTO_ACTIVO)
+                ->select('e.id','p.province','d.name as deporte','r.name as residencia','e.date_start','e.date_end','e.tipo')
+                ->get();
 
         }
+        return view('eventos.list', compact( 'evento'));
 
     }
 

@@ -120,6 +120,7 @@ class AthleteController extends Controller
             $provincia_id = $request->input('provincia_id');
             $provincia = Provincia::where('id', $provincia_id)->first();
             $atleta->funcion = strtoupper($request->input('funcion'));
+            $atleta->status = strtoupper($request->input('status'));
             $deporte_id = $request->input('deporte_id');
             $deporte = Deporte::where('id', $deporte_id)->first();
             $atleta->gen = strtoupper($request->input('gen'));
@@ -140,6 +141,8 @@ class AthleteController extends Controller
                 $path = public_path() . '/uploads/athletes/img';
                 $file->move($path, $name);
                 $atleta->image = $name;
+            }else {
+                $atleta->image=$request->input('document');
             }
 
             $atleta->save();
@@ -150,8 +153,8 @@ class AthleteController extends Controller
         } catch (\Exception $e) {
 
             DB::rollback();
-            return redirect()->back()->with('message_danger', 'Ha ocurrido un error al crear el registro');
-//            return redirect()->back()->with('message_danger',$e->getMessage());
+//            return redirect()->back()->with('message_danger', 'Ha ocurrido un error al crear el registro');
+            return redirect()->back()->with('message_danger',$e->getMessage());
         }
 
         return redirect()->route('athletes.index')->with('message', 'Participante creado correctamente');
@@ -198,6 +201,7 @@ class AthleteController extends Controller
             $provincia_id = $request->input('provincia_id');
             $provincia = Provincia::where('id', $provincia_id)->first();
             $atleta->funcion = strtoupper($request->input('funcion'));
+            $atleta->status = strtoupper($request->input('status'));
             $deporte_id = $request->input('deporte_id');
             $deporte = Deporte::where('id', $deporte_id)->first();
             $atleta->gen = strtoupper($request->input('gen'));
@@ -229,8 +233,8 @@ class AthleteController extends Controller
         } catch (\Exception $e) {
 
             DB::rollback();
-
             return redirect()->back()->with('message_danger', 'Ha ocurrido un error al actualizar el participante');
+//            return redirect()->back()->with('message_danger', $e->getMessage());
         }
 
         return redirect()->route('athletes.index')->with('message', 'Registro actualizado correctamente');
@@ -307,6 +311,7 @@ class AthleteController extends Controller
                             "last_name" => $value->apellidos,
                             "name" => $value->nombres,
                             "gen" => $value->genero,
+                            "status"=>$value->status,
                             "provincia_id" => $value->provincia,
                             "funcion" => $value->funcion,
                             "image" => $doc . '.' . 'jpg'

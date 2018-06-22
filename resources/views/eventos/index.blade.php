@@ -11,39 +11,28 @@
         </div>
     </div>
 
-        <h4 class="page-header">Listado de participantes</h4>
-        <div class="row">
-            <div class="col-lg-6" id="botones_imprimir"></div>
-        </div>
+        <h4 class="page-header">Lista de eventos</h4>
         <div class="col-xs-12 col-md-10 col-md-offset-1">
         <table class="table table-striped table-bordered table-condensed table-hover table-responsive"
-               id="atletas_table" cellspacing="0" style="display:none; overflow: auto; font-size: 11px;" width="100%">
+               id="eventos_table" cellspacing="0" style="display: none;overflow: auto; font-size: 11px;" width="100%">
             <thead>
             <tr>
                 <th width="10">No.</th>
-                <th>Función</th>
-                <th>Nombres</th>
-                <th>Apellidos</th>
-                <th style="width: 60px">Cédula</th>
+                <th>Disciplina</th>
                 <th>Provincia</th>
-                <th>Deporte</th>
-                <th style="width: 50px;">Estado</th>
-                <th style="width: 50px;">Acreditado</th>
-                <th style="width: 80px;">Acción</th>
+                <th>Desde</th>
+                <th>Hasta</th>
+                <th>Accción</th>
             </tr>
             </thead>
             <tfoot>
             <tr>
-                <th>No.</th>
-                <th class="tfoot_search">Función</th>
-                <th class="tfoot_search">Nombres</th>
-                <th class="tfoot_search">Apellidos</th>
-                <th class="tfoot_search">Cédula</th>
-                <th class="tfoot_search">Provincia</th>
-                <th class="tfoot_search">Deporte</th>
-                <th class="tfoot_search">Estado</th>
-                <th class="tfoot_search">Acreditado</th>
-                <th >Acción</th>
+                <th width="10">No.</th>
+                <th>Disciplina</th>
+                <th>Provincia</th>
+                <th>Desde</th>
+                <th>Hasta</th>
+                <th class="non_searchable">Acción</th>
             </tr>
             </tfoot>
         </table>
@@ -52,7 +41,7 @@
         <div class="osahanloading"></div>
     </div>
 
-    {!! Form::open(['route'=>['athletes.destroy',':ID'],'method'=>'DELETE','id'=>'form-delete']) !!}
+    {!! Form::open(['route'=>['events.destroy',':ID'],'method'=>'DELETE','id'=>'form-delete']) !!}
     {!! Form::close() !!}
 
     </div>
@@ -70,13 +59,7 @@
                 }
             });
 
-            //texto de input para filtrar
-            $('.tfoot_search').each(function () {
-                var title = $(this).text();
-                $(this).html('<input type="text" style="width: 80%" placeholder="' + title + '" />');
-            });
-
-            var table = $('#atletas_table').on('processing.dt', function (e, settings, processing) {
+            var table = $('#events_table').on('processing.dt', function (e, settings, processing) {
                 $('#loading').css('display', processing ? 'block' : 'none');
             }).DataTable({
 
@@ -85,17 +68,13 @@
                 processing: false,
                 stateSave: false,
                 serverSide: true,
-                ajax: '{{route('getAllAthletes')}}',
+                ajax: '{{route('getAllEvents')}}',
                 columns: [
-                    {data: 'id', name: 'athletes.id'},
-                    {data: 'funcion', name: 'athletes.funcion'},
-                    {data: 'name', name: 'athletes.name'},
-                    {data: 'last_name', name: 'athletes.last_name'},
-                    {data: 'document', name: 'athletes.document'},
-                    {data: 'provincia', name: 'provincia.province'},
-                    {data: 'deporte', name: 'deporte.name'},
-                    {data: 'status', name: 'athletes.status'},
-                    {data: 'acreditado', name: 'athletes.acreditado',orderable: false, searchable: false},
+                    {data: 'id', name: 'events.id'},
+                    {data: 'deporte', name: 'deportes.name'},
+                    {data: 'provincia', name: 'provincias.province'},
+                    {data: 'date_start', name: 'events.date_start'},
+                    {data: 'date_end', name: 'events.date_end'},
                     {data: 'actions', name: 'opciones', orderable: false, searchable: false}
                 ],
                 "language": {
@@ -127,41 +106,28 @@
                         "print": "Imprimir"
                     }
                 },
-                initComplete: function () {
-                    this.api().columns().every(function () {
+                "fnInitComplete": function () {
+
+                    $('#atletas_table').fadeIn();
+
+
+                    table.columns().every(function () {
                         var column = this;
-                        //input text
-                        if ($(column.footer()).hasClass('tfoot_search')) {
-                            //aplicar la busquedad
-                            var that = this;
-                            $('input', this.footer()).on('keyup change', function () {
-                                if (that.search() !== this.value) {
-                                    that.search(this.value).draw();
-                                }
-                            });
-
-                        }
-                        else if ($(column.footer()).hasClass('tfoot_select')) { //select
-                            var column = this;
-                            //aplicar la busquedad
-                            var select = $('<select style="width: 100%"><option value=""></option></select>')
-                                .appendTo($(column.footer()).empty())
+                        var columnClass = column.footer().className;
+                        if (columnClass !== 'non_searchable') {
+                            var input = document.createElement("input");
+                            $(input).appendTo($(column.footer()).empty())
                                 .on('change', function () {//keypress keyup change
-                                    var val = $.fn.dataTable.util.escapeRegex(
-                                        $(this).val()
-                                    );
-                                    column.search(val ? '^' + val + '$' : '', true, false).draw();
+                                    column.search($(this).val(), false, false, true).draw();
                                 });
-
-                            column.data().unique().sort().each(function (d, j) {
-                                select.append('<option value="' + d + '">' + d + '</option>')
-                            });
                         }
                     });
-                }
 
+                }
             });
-            $("#atletas_table").fadeIn();
+
+//            table.buttons().container()
+//                .appendTo( '#botones_imprimir' );
 
         });
 
@@ -208,7 +174,7 @@
                         },2000);
                     }//isConfirm
                     else {
-                        swal("Cancelado!", "No elimino a atleta", "error");
+                        swal("Cancelado!", "No elimino el evento", "error");
                     }
                 });
         }

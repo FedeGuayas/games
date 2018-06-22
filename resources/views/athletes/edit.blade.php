@@ -58,7 +58,7 @@
                     <div class="row">
                         <div class="form-group col-md-6">
                             <label for="gen">Sexo *</label>
-                            {!! Form::select('gen',['M'=>'Masculino','F'=>'Femenino'],null,['class'=>'form-control','placeholder'=>'Sexo ...','id'=>'gen','required']) !!}
+                            {!! Form::select('gen',['M'=>'Masculino','F'=>'Femenino'],$athlete->sexo,['class'=>'form-control','id'=>'gen','required']) !!}
                         </div>
                         <div class="form-group col-md-6">
                             <label for="birth_date">Fecha de Nacimiento</label>
@@ -87,13 +87,19 @@
                     </div>
 
                     <div class="row">
-                        <div class="form-group col-md-6 ">
+                        <div class="form-group col-md-3">
+                            {!! Form::label('status', 'Estado') !!}
+                            {!! Form::select('status',['A'=>'ACTIVO','S'=>'SUPLENTE'],$athlete->status,['class'=>'form-control','id'=>'status','required']) !!}
+                        </div>
+                        <div class="form-group col-md-3 ">
                             <label>
                                 {!! Form::checkbox('acreditar',null,$athlete->acreditado,['id'=>'acreditar']) !!}
                                 {!! Form::label('acreditar', 'Acreditar') !!}
                             </label>
                         </div>
                     </div>
+
+
 
                     <div class="row">
                         <div class="form-group col-md-6">

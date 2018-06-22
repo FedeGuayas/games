@@ -63,7 +63,7 @@
                 </tr>
             @endforeach
         </tbody>
-    </table>    
+    </table>
 </div>
 
 {{--numero de pagina--}}

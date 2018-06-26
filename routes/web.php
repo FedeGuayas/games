@@ -47,12 +47,18 @@ Route::middleware('auth')->prefix('/app')->group(function () {
     Route::get('events/get','EventController@getAllEvents')->name('getAllEvents');
 
     Route::get('events/comandas/create','EventController@createComanda')->name('events.createComanda');
-    Route::get('events/{id}/comandas/getPersons','EventController@listPersonasComandas')->name('events.listPersonasComandas');
+    Route::get('events/{id}/comandas/{status}/getPersons/','EventController@listPersonasComandas')->name('events.listPersonasComandas');
     Route::get('events/comandas/exportPDF','ReportesController@comandaPDF')->name('comandasPDF');
 
     //selects dinamicoa para comandas
     Route::get('events/comandas/getDeportes',['uses'=>'EventController@getDeportes', 'as'=>'events.getDeportes']);
     Route::get('events/comandas/getResidencia',['uses'=>'EventController@getResidencia', 'as'=>'events.getResidencia']);
+    Route::get('events/comandas/getEventos',['uses'=>'EventController@getEventos', 'as'=>'events.getEventos']);
+
+    //selects dinamicoa para crear eventos
+    Route::get('events/comandas/getDeportesProvincia',['uses'=>'EventController@getDeportesProvincia', 'as'=>'events.getDeportesProvincia']);
+
+
     Route::get('events/comandas/getEventos',['uses'=>'EventController@getEventos', 'as'=>'events.getEventos']);
 
     Route::resource('athletes', 'AthleteController',['except'=>['show']]);

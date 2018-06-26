@@ -27,27 +27,31 @@ class ReportesController extends Controller
 //        }
 
 //        $date = $request->input('date');
+
         $evento_id = $request->input('evento_id');
 
         $seleccionados = $request->input('seleccionar');
 
-//
-//
-//
         $evento = Event::where('id', $evento_id)->first();
         $provincia = Provincia::where('id', $evento->provincia_id)->first();
         $deporte = Deporte::where('id', $evento->deporte_id)->first();
         $residencia = Residencia::where('id', $evento->residencia_id)->first();
+
         $tipo = $evento->tipo;
         if ($tipo == 'H') {
             $tipo = 'HOSPEDAJE';
+            $periodo_de = 'HOSPEDAJE';
         } elseif ($tipo == 'A') {
             $tipo = 'ALMUERZO';
+            $periodo_de = 'ALIMENTACIÓN';
         } elseif ($tipo == 'D'){
             $tipo = 'DESAYUNO';
+            $periodo_de = 'ALIMENTACIÓN';
         }elseif ($tipo=='M'){
             $tipo='MERIENDA';
+            $periodo_de = 'ALIMENTACIÓN';
         }
+
 
         //lista de atletas incluidos en el evento
         $lista = AthleteEvent::from('athlete_event as ae')
@@ -75,7 +79,7 @@ class ReportesController extends Controller
             ini_set('memory_limit', '1G');
 
 
-            $pdf = PDF::loadView('reportes.comandas-pdf', compact('lista', 'impresiones','diasArray','tipo','evento','provincia','deporte','residencia','pdf'));
+            $pdf = PDF::loadView('reportes.comandas-pdf', compact('lista', 'impresiones','diasArray','tipo','evento','provincia','deporte','residencia','pdf','periodo_de'));
 
 
 

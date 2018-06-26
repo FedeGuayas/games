@@ -7,7 +7,7 @@
         @include('alert.alert')
 
         <div class="col-xs-12">
-            <h4 class="page-header">Crear evento</h4>
+            <h4 class="page-header">Crear evento (Solo se asignarán Deportistas y Entrenadores)</h4>
             {!! Form::open (['route' => 'events.store','method' => 'post', 'class'=>'form_noEnter'])!!}
 
             <div class="panel panel-success">
@@ -17,11 +17,15 @@
                     <div class="row">
                         <div class="form-group col-md-2">
                             <label for="provincia_id">Provincia *</label>
-                            {!! Form::select('provincia_id',$list_provincias,null,['class'=>'form-control','placeholder'=>'Seleccione ...','id'=>'provincia_id','required']) !!}
+                            {!! Form::select('provincia_id',$list_provincias,null,['class'=>'form-control','placeholder'=>'Seleccione provincia...','id'=>'provincia_id','required']) !!}
+
+
                         </div>
                         <div class="form-group col-md-2">
                             <label for="deporte_id">Deporte *</label>
-                            {!! Form::select('deporte_id',$list_deportes,null,['class'=>'form-control','placeholder'=>'Seleccione ...','id'=>'deporte_id','required']) !!}
+{{--                            {!! Form::select('deporte_id',$list_deportes,null,['class'=>'form-control','placeholder'=>'Seleccione ...','id'=>'deporte_id','required']) !!}--}}
+                            {!! Form::select('deporte_id',['placeholder'=>'Seleccione deporte...'],null,['class'=>'form-control','id'=>'deporte_id','required']) !!}
+
                         </div>
                         <div class="form-group col-md-2 has-success">
                             <label for="cantidad_personas">Cantidad de personas</label>
@@ -63,8 +67,7 @@
 
             <div class="panel panel-info">
                 <div class="panel-body">
-                    <div class="panel-heading bg-success">Lista</div>
-
+                    <div class="panel-heading bg-success">Lista para el evento</div>
 
 
                     <div id="lista_personas"></div>
@@ -87,22 +90,42 @@
     $(document).ready(function () {
 
 
+        //al seleccionar provincia mostrar los deportes
         $("#provincia_id").change(function () {
-            var deporte = $("#deporte_id");
+            var id = this.value;
+            var deportes = $("#deporte_id");
             $("#cantidad_personas").val('');
-//            deporte.find("option:gt(0)").remove();
-
+            var token = $("input[name=_token]").val();
+            var route = "{{route('events.getDeportesProvincia')}}";
+            var data = {
+                provincia_id: id
+            };
+            $.ajax({
+                url: route,
+                type: "GET",
+                headers: {'X-CSRF-TOKEN': token},
+//               contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                data: data,
+                success: function (response) {
+                    deportes.find("option:gt(0)").remove();
+                    for (i = 0; i < response.length; i++) {
+                        deportes.append('<option value="' + response[i].id + '">' + response[i].name+ '</option>');
+                    }
+                },
+                error: function (response) {
+                    deportes.find("option:gt(0)").remove();
+                }
+            });
         });
-
 
         $("#deporte_id").change(function () {
             var deporte_id = this.value;
             var provincia_id = $("#provincia_id").val();
+            var cantidad_personas = $("#cantidad_personas");
+            $("#cantidad_personas").val('');
             var token = $("input[name=_token]").val();
             var route = "{{route('events.countAtletas')}}";
-            var cantidad_personas = $("#cantidad_personas");
-            var lista_personas = $("#lista_personas");
-            $("#cantidad_personas").val('');
             var data = {
                 deporte_id: deporte_id,
                 provincia_id: provincia_id

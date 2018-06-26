@@ -406,6 +406,12 @@ class AthleteController extends Controller
     {
         $imp_cred = $request->get('imp_cred');
 
+        $seleccionados=count($imp_cred);
+//dd($seleccionados);
+        if ($seleccionados>4) {
+           return redirect()->route('print_athletes')->with('message_danger', 'Solo puede seleccionar 4 personas a la ves para imprimir sus credenciales')->withInput();
+        }
+
         if (!is_null($imp_cred)) {
             $credenciales = Athlete::with('provincia', 'deporte')->whereIn('id', $imp_cred)->get();
             $posicion = 0;

@@ -23,6 +23,10 @@
                             {!! Form::select('deporte_id',['placeholder'=>'Seleccione deporte...'],null,['class'=>'form-control','id'=>'deporte_id','required']) !!}
                         </div>
                         <div class="form-group col-md-2">
+                            <label for="status">Estado de los participantes</label>
+                            {!! Form::select('status',[\App\Athlete::ATLETA_ACTIVO=>'Todos',\App\Athlete::ATLETA_ACREDITADO=>'ACREDITADOS',],\App\Athlete::ATLETA_ACTIVO,['class'=>'form-control','id'=>'status','required']) !!}
+                        </div>
+                        <div class="form-group col-md-2">
                             <label for="residencia_id">Residencia *</label>
                             {!! Form::select('residencia_id',['placeholder'=>'Seleccione residencia...'],null,['class'=>'form-control','id'=>'residencia_id','required']) !!}
                         </div>
@@ -128,12 +132,14 @@
             var deporte_id=$("#deporte_id").val();
             var lista_eventos = $("#lista_eventos");
             var token = $("input[name=_token]").val();
+            var status= $("#status").val();
             var route = "{{route('events.getEventos')}}";
 //            var date = $("#date");
             var data = {
                 residencia_id: id,
                 provincia_id: provincia_id,
-                deporte_id: deporte_id
+                deporte_id: deporte_id,
+                status:status
             };
             $.ajax({
                 url: route,
@@ -156,43 +162,6 @@
                 }
             });
         });
-
-
-
-
-        {{--$("#tipo").change(function () {--}}
-            {{--var date = $("#date").val();--}}
-            {{--var deporte_id = $("#deporte_id").val();--}}
-            {{--var provincia_id = $("#provincia_id").val();--}}
-            {{--var residencia_id = $("#residencia_id").val();--}}
-            {{--var tipo = $("#tipo").val();--}}
-            {{--var token = $("input[name=_token]").val();--}}
-            {{--var route = "{{route('events.listPersonasComandas')}}";--}}
-            {{--var lista_personas = $("#lista_personas");--}}
-            {{--var data = {--}}
-                {{--deporte_id: deporte_id,--}}
-                {{--provincia_id: provincia_id,--}}
-                {{--residencia_id: residencia_id,--}}
-                {{--tipo:tipo,--}}
-                {{--date:date--}}
-            {{--};--}}
-            {{--$.ajax({--}}
-                {{--url: route,--}}
-                {{--type: "GET",--}}
-                {{--headers: {'X-CSRF-TOKEN': token},--}}
-{{--//               contentType: 'application/x-www-form-urlencoded',--}}
-{{--//                dataType: 'json',--}}
-                {{--data: data,--}}
-                {{--success: function (response) {--}}
-                    {{--console.log(response);--}}
-                    {{--lista_personas.html(response);--}}
-                {{--},--}}
-                {{--error: function (response) {--}}
-                    {{--console.log(response);--}}
-                {{--}--}}
-            {{--});--}}
-        {{--});--}}
-
 
     });
 

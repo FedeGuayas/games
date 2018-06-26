@@ -9,6 +9,7 @@
         <div class="col-xs-12">
             <h4 class="page-header">Lista de personas a imprimir en la Comanda</h4>
             {!! Form::open (['route' => 'comandasPDF','method' => 'get', 'class'=>'form_noEnter'])!!}
+            {!! Form::hidden('evento_id',$evento->id,['id'=>'evento_id']) !!}
 
             {{--<div class="row">--}}
                 {{--<div class="form-group col-md-2">--}}
@@ -24,7 +25,6 @@
 
                     @if (count($lista)>0)
                         <button type="submit" class="btn btn-primary pull-right">Exportar Comanda</button>
-                        {!! Form::hidden('evento_id',$evento->id) !!}
                         <table class="table" id="table_list" >
                             <thead>
                             <tr>
@@ -77,9 +77,3 @@
 
     </div>
 @endsection
-
-
-
-
-
-

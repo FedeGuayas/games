@@ -17,21 +17,25 @@
                id="eventos_table" cellspacing="0" style="display: none;overflow: auto; font-size: 11px;" width="100%">
             <thead>
             <tr>
-                <th width="10">No.</th>
+                <th style="width: 10px;">No.</th>
                 <th>Disciplina</th>
                 <th>Provincia</th>
+                <th>Residencia</th>
                 <th>Desde</th>
                 <th>Hasta</th>
+                <th>Tipo</th>
                 <th>Accción</th>
             </tr>
             </thead>
             <tfoot>
             <tr>
-                <th width="10">No.</th>
+                <th class="non_searchable">No.</th>
                 <th>Disciplina</th>
                 <th>Provincia</th>
+                <th>Residencia</th>
                 <th>Desde</th>
                 <th>Hasta</th>
+                <th>Tipo</th>
                 <th class="non_searchable">Acción</th>
             </tr>
             </tfoot>
@@ -59,7 +63,7 @@
                 }
             });
 
-            var table = $('#events_table').on('processing.dt', function (e, settings, processing) {
+            var table = $('#eventos_table').on('processing.dt', function (e, settings, processing) {
                 $('#loading').css('display', processing ? 'block' : 'none');
             }).DataTable({
 
@@ -70,11 +74,13 @@
                 serverSide: true,
                 ajax: '{{route('getAllEvents')}}',
                 columns: [
-                    {data: 'id', name: 'events.id'},
-                    {data: 'deporte', name: 'deportes.name'},
-                    {data: 'provincia', name: 'provincias.province'},
-                    {data: 'date_start', name: 'events.date_start'},
-                    {data: 'date_end', name: 'events.date_end'},
+                    {data: 'id', name: 'id', searchable: false},
+                    {data: 'deportes', name: 'deportes'},
+                    {data: 'provincia', name: 'provincia'},
+                    {data: 'residencia', name: 'residencia'},
+                    {data: 'date_start', name: 'date_start'},
+                    {data: 'date_end', name: 'date_end'},
+                    {data: 'tipo', name: 'tipo'},
                     {data: 'actions', name: 'opciones', orderable: false, searchable: false}
                 ],
                 "language": {
@@ -108,7 +114,7 @@
                 },
                 "fnInitComplete": function () {
 
-                    $('#atletas_table').fadeIn();
+                    $('#eventos_table').fadeIn();
 
 
                     table.columns().every(function () {

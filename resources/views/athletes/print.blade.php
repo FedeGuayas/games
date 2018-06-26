@@ -78,7 +78,7 @@
             }).DataTable({
 
 //                    var table = $('#atletas_table').DataTable({
-                lengthMenu: [[4], [4]],
+                lengthMenu: [[4,20,50,-1], [4,20,50,'Todo']],
                 processing: false,
                 stateSave: true,
                 serverSide: true,

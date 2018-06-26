@@ -1,5 +1,6 @@
 @if (count($evento)>0)
-    <table class="table" id="event_list" >
+    {!! Form::hidden('status',$status) !!}
+    <table class="table" id="event_list">
         <thead>
         <tr>
             <th>Provincia</th>
@@ -43,7 +44,7 @@
                 <td>{{$e->date_start}}</td>
                 <td>{{$e->date_end}}</td>
                 <td>
-                    <a href="{{route('events.listPersonasComandas',$e->id)}}" style="text-decoration-line: none">
+                    <a href="{{route('events.listPersonasComandas',[$e->id,$status])}}" style="text-decoration-line: none">
                         <button class="btn-xs btn-primary"><span class="glyphicon glyphicon-export" aria-hidden="true"></span></button>
                     </a>
 {{--                    {!! Form::checkbox('seleccionar[]',$e->id,true,['id'=>$e->id]) !!}--}}

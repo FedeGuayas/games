@@ -40,7 +40,7 @@ class EventController extends Controller
     {
         if ($request->ajax()) {
 
-            if ($request->user()->hasRole('admin')){
+            if ($request->user()->hasRole('admin')) {
                 $eventos = Event::from('events as e')
                     ->join('deportes as d', 'd.id', '=', 'e.deporte_id')
                     ->join('provincias as p', 'p.id', '=', 'e.provincia_id')
@@ -49,7 +49,7 @@ class EventController extends Controller
                     ->select('e.*', 'd.name as deporte', 'p.province', 'r.name as residencia');
             }
 
-            if ($request->user()->hasRole('usuario')){
+            if ($request->user()->hasRole('usuario')) {
                 $eventos = Event::from('events as e')
                     ->join('deportes as d', 'd.id', '=', 'e.deporte_id')
                     ->join('provincias as p', 'p.id', '=', 'e.provincia_id')
@@ -95,15 +95,15 @@ class EventController extends Controller
                     $query->whereRaw("e.date_end like ?", ["%{$keyword}%"]);
                 })
                 ->editColumn('tipo', function ($eventos) {
-                    if  ($eventos->tipo=='H'){
-                       return 'HOSPEDAJE';
-                   }elseif ($eventos->tipo=='A'){
-                       return 'ALMUERZO';
-                  }elseif ($eventos->tipo=='D'){
-                      return 'DESAYUNO';
-                  }elseif ($eventos->tipo=='M'){
-                      return 'MERIENDA';
-                  }
+                    if ($eventos->tipo == 'H') {
+                        return 'HOSPEDAJE';
+                    } elseif ($eventos->tipo == 'A') {
+                        return 'ALMUERZO';
+                    } elseif ($eventos->tipo == 'D') {
+                        return 'DESAYUNO';
+                    } elseif ($eventos->tipo == 'M') {
+                        return 'MERIENDA';
+                    }
                 })
                 ->filterColumn('tipo', function ($query, $keyword) {
                     $query->whereRaw("e.tipo like ?", ["%{$keyword}%"]);
@@ -135,12 +135,12 @@ class EventController extends Controller
         $list_deportes = $deportes->pluck('name', 'id');
 
 
-        if ($request->user()->hasRole('admin')){
+        if ($request->user()->hasRole('admin')) {
             $residencias = Residencia::where('status', Residencia::RESIDENCIA_ACTIVO)->get();
         }
-        if ($request->user()->hasRole('usuario')){
+        if ($request->user()->hasRole('usuario')) {
             $residencias = Residencia::
-                where('name','CEAR')
+            where('name', 'CEAR')
                 ->where('status', Residencia::RESIDENCIA_ACTIVO)
                 ->get();
         }
@@ -226,8 +226,8 @@ class EventController extends Controller
             $deporte = Deporte::where('id', $deporte_id)->first();
 
             $list_atletas = Athlete::
-                //que no esten inactivos
-                where('status', '!=', Athlete::ATLETA_INACTIVO)
+            //que no esten inactivos
+            where('status', '!=', Athlete::ATLETA_INACTIVO)
                 //pertenecen a la provincia seleccionada
                 ->where('provincia_id', $provincia->id)
                 //al deporte seleccionado
@@ -312,14 +312,14 @@ class EventController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request,$id)
+    public function edit(Request $request, $id)
     {
         $event = Event::where('id', $id)->first();
 
         //lista de personas del deporte y provincia en el evento
         $lista = AthleteEvent::from('athlete_event as ae')
             ->join('athletes as a', 'a.id', '=', 'ae.athlete_id')
-            ->where('ae.event_id',$event->id )
+            ->where('ae.event_id', $event->id)
             ->select('a.id', 'a.name', 'a.last_name', 'a.document', 'a.gen', 'a.funcion', 'a.acreditado')
             ->orderBy('a.last_name')
             ->get();
@@ -347,12 +347,12 @@ class EventController extends Controller
         $deportes = Deporte::where('status', Deporte::DEPORTE_ACTIVO)->get();
         $list_deportes = $deportes->pluck('name', 'id');
 
-        if ($request->user()->hasRole('admin')){
+        if ($request->user()->hasRole('admin')) {
             $residencias = Residencia::where('status', Residencia::RESIDENCIA_ACTIVO)->get();
         }
-        if ($request->user()->hasRole('usuario')){
+        if ($request->user()->hasRole('usuario')) {
             $residencias = Residencia::
-            where('name','CEAR')
+            where('name', 'CEAR')
                 ->where('status', Residencia::RESIDENCIA_ACTIVO)
                 ->get();
         }
@@ -470,9 +470,12 @@ class EventController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function listPersonasComandas($id, $status)
+    public function listPersonasComandas($id,$status, $sust)
     {
 //        $date = $request->input('date');
+
+//        $status=Todos //Athlete::ATLETA_ACTIVO
+//        $status=ACREDITADO //Athlete::ATLETA_ACREDITADO
 
         $evento = Event::where('id', $id)
 //            ->where([
@@ -505,6 +508,7 @@ class EventController extends Controller
                     break;
             }
 
+
         }
 
 //            $provincia_id = $request->input('provincia_id');
@@ -517,6 +521,12 @@ class EventController extends Controller
 //            $deporte = Deporte::where('id', $deporte_id)->first();
 //            $residencia = Residencia::where('id', $residencia_id)->first();
 
+        if ($sust=='true') {
+            $sustitutiva='true';
+            return view('comandas.list_sust', compact('lista', 'evento','sustitutiva'));
+        }else {
+            $sustitutiva=false;
+        }
         return view('comandas.list', compact('lista', 'evento'));
 
 

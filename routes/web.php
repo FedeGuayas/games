@@ -54,7 +54,7 @@ Route::middleware('auth')->prefix('/app')->group(function () {
     Route::get('events/get','EventController@getAllEvents')->name('getAllEvents');
 
     Route::get('events/comandas/create','EventController@createComanda')->name('events.createComanda');
-    Route::get('events/{id}/comandas/{status}/getPersons/','EventController@listPersonasComandas')->name('events.listPersonasComandas');
+    Route::get('events/{id}/comandas/{status}/getPersons/{sustitutiva}','EventController@listPersonasComandas')->name('events.listPersonasComandas');
     Route::get('events/comandas/exportPDF','ReportesController@comandaPDF')->name('comandasPDF');
 
     //selects dinamicoa para comandas

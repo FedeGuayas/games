@@ -25,17 +25,19 @@ class ReportesController extends Controller
      */
     public function comandaPDF(Request $request)
     {
+
 //        $date = $request->input('date');
 //
 //        if (!isset($date)){
-//            return back()->with('message_danger','Debe sleccionar la fecha de impresión')->withInput();
+//            return back()->with('message_danger','Debe seleccionar la fecha de impresión')->withInput();
 //        }
-
 //        $date = $request->input('date');
 
         $evento_id = $request->input('evento_id');
 
         $seleccionados = $request->input('seleccionar');
+        $observaciones = $request->input('observaciones');
+        $sustitutiva= $request->input('sustitutiva');
 
         $evento = Event::where('id', $evento_id)->first();
         $provincia = Provincia::where('id', $evento->provincia_id)->first();
@@ -57,8 +59,7 @@ class ReportesController extends Controller
             $periodo_de = 'ALIMENTACIÓN';
         }
 
-
-        //lista de atletas incluidos en el evento
+        //lista de atletas incluidos en el evento y seleccionados en la lista de comanda
         $lista = AthleteEvent::from('athlete_event as ae')
             ->join('athletes as a', 'a.id', '=', 'ae.athlete_id')
             ->where('ae.event_id', $evento->id)
@@ -84,7 +85,14 @@ class ReportesController extends Controller
             ini_set('memory_limit', '1G');
 
 
-            $pdf = PDF::loadView('reportes.comandas-pdf', compact('lista', 'impresiones','diasArray','tipo','evento','provincia','deporte','residencia','pdf','periodo_de'));
+            if (isset($sustitutiva) && $sustitutiva=='true' ){
+
+                $pdf = PDF::loadView('reportes.comandas-sust-pdf', compact('lista', 'impresiones','diasArray','tipo','evento','provincia','deporte','residencia','pdf','periodo_de','observaciones'));
+            }else{
+                $pdf = PDF::loadView('reportes.comandas-pdf', compact('lista', 'impresiones','diasArray','tipo','evento','provincia','deporte','residencia','pdf','periodo_de'));
+            }
+
+
 
 
 

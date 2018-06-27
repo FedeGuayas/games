@@ -110,9 +110,9 @@
 
                     <div class="panel-heading bg-danger">Lista de personas que no están incluidas en el evento</div>
 
-                    {{--Personas que estan en el evento--}}
+                    {{--Personas que no estan en el evento--}}
                     @if (count($listaAll)>0)
-                        <table class="table" id="table_list" >
+                        <table class="table" id="table_list2" >
                             <thead>
                             <tr>
                                 <th>id</th>

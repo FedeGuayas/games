@@ -163,6 +163,8 @@
             });
         });
 
+        $('.toolpip').tooltip();
+
     });
 
 </script>

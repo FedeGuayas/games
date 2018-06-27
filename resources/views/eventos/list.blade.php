@@ -11,7 +11,7 @@
             <th>Tipo</th>
             <th>Inicio</th>
             <th>Fin</th>
-            <th>Generar</th>
+            <th colspan="2">Generar Comandas</th>
         </tr>
         </thead>
         <tfoot>
@@ -22,7 +22,8 @@
             <th>Tipo</th>
             <th>Inicio</th>
             <th>Fin</th>
-            <th>Generar</th>
+            <th>Normal</th>
+            <th>Sustitutiva</th>
         </tr>
         </tfoot>
         <tbody>
@@ -47,10 +48,12 @@
                 <td>{{$e->date_end}}</td>
                 <td>
                     <a href="{{route('events.listPersonasComandas',[$e->id,$status,$no_sust])}}" style="text-decoration-line: none">
-                        <button class="btn-xs btn-primary"><span class="glyphicon glyphicon-export" aria-hidden="true"></span></button>
+                        <button class="btn btn-xs btn-primary" data-toggle="tooltip" data-placement="top" title="Comandas"><span class="glyphicon glyphicon-export" aria-hidden="true"></span></button>
                     </a>
+                </td>
+                <td>
                     <a href="{{route('events.listPersonasComandas',[$e->id,$status,$sust])}}" style="text-decoration-line: none">
-                        <button class="btn-xs btn-danger"><span class="glyphicon glyphicon-export" aria-hidden="true"></span></button>
+                        <button class="btn btn-xs btn-danger toolpip" data-toggle="tooltip" data-placement="top" title="Comandas Sustitutivas"><span class="glyphicon glyphicon-export" aria-hidden="true"></span></button>
                     </a>
 {{--                    {!! Form::checkbox('seleccionar[]',$e->id,true,['id'=>$e->id]) !!}--}}
                 </td>

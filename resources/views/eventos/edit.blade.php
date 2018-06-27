@@ -146,7 +146,7 @@
                                     <td>{{$la->gen}}</td>
                                     <td>{{$la->funcion}}</td>
                                     <td>
-                                        {!! Form::checkbox('seleccionar_agregar[]',$la->id,true,['id'=>$la->id]) !!}
+                                        {!! Form::checkbox('seleccionar_agregar[]',$la->id,false,['id'=>$la->id]) !!}
                                     </td>
                                 </tr>
                             @endforeach

@@ -11,20 +11,26 @@ class UserTableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('users')->insert([
-            'name' => 'Admin',
-            'first_name' => 'Admin',
-            'last_name' => 'System',
-            'email' => 'admin@mail.com',
-            'password' => bcrypt('11111111'),
-        ]);
-        DB::table('users')->insert([
-            'name' => 'gestor',
-            'first_name' => 'Gestor',
-            'last_name' => 'Sistema',
-            'email' => 'gestor@mail.com',
-            'password' => bcrypt('111111'),
-        ]);
+        $role_usuario = \App\Role::where('name', 'usuario')->first();
+        $role_admin  = \App\Role::where('name', 'admin')->first();
+
+        $admin = new \App\User();
+        $admin->name = 'Admin';
+        $admin->first_name = 'Administrador';
+        $admin->last_name = 'Fedeguayas';
+        $admin->email = 'admin@mail.com';
+        $admin->password = bcrypt('QeChsL8P4Fs4pZFM');
+        $admin->save();
+        $admin->roles()->attach($role_admin);
+
+        $usuario = new \App\User();
+        $usuario->name = 'Gestor';
+        $usuario->first_name = 'Usuario';
+        $usuario->last_name = 'Gestor';
+        $usuario->email = 'usuario@mail.com';
+        $usuario->password = bcrypt('DJNqeloEbzAltZfb');
+        $usuario->save();
+        $usuario->roles()->attach($role_usuario);
 
     }
 }

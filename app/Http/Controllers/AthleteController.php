@@ -15,10 +15,12 @@ use Codedge\Fpdf\Fpdf\Fpdf;
 
 class AthleteController extends Controller
 {
+
     public function __construct()
     {
-
+        $this->middleware('auth');
     }
+
 
     /**
      * Vista con la lista de participantes
@@ -195,6 +197,8 @@ class AthleteController extends Controller
 
             $atleta = Athlete::query()->findOrFail($id);
 
+            $fecha_nac=$request->input('birth_date');
+
             $atleta->name = strtoupper($request->input('name'));
             $atleta->last_name = strtoupper($request->input('last_name'));
             $atleta->document = strtoupper($request->input('document'));
@@ -205,7 +209,13 @@ class AthleteController extends Controller
             $deporte_id = $request->input('deporte_id');
             $deporte = Deporte::where('id', $deporte_id)->first();
             $atleta->gen = strtoupper($request->input('gen'));
-            $atleta->birth_date = strtoupper($request->input('birth_date'));
+
+            if( isset($fecha_nac)) {
+                $atleta->birth_date = $fecha_nac;
+            }else {
+                $atleta->birth_date = null;
+            }
+
             $atleta->notes = strtoupper($request->input('notes'));
             $atleta->deporte()->associate($deporte);
             $atleta->provincia()->associate($provincia);

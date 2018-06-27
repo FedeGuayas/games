@@ -14,12 +14,14 @@ class DatabaseSeeder extends Seeder
         // $this->call(UsersTableSeeder::class);
         DB::statement('SET FOREIGN_KEY_CHECKS=0');
 
+        \App\Role::truncate();
         \App\User::truncate();
         \App\Residencia::truncate();
         \App\Provincia::truncate();
         \App\Deporte::truncate();
 
 
+        $this->call(RoleTableSeeder::class);
         $this->call(UserTableSeeder::class);
         $this->call(ProvinciaTableSeeder::class);
         $this->call(DeporteTableSeeder::class);

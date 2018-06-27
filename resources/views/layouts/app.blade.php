@@ -46,64 +46,75 @@
                 <!-- Left Side Of Navbar -->
                 <ul class="nav navbar-nav">
 
-                    <li class="active"><a href="{{route('home')}}">Inicio <span
-                                    class="sr-only">(current)</span></a></li>
-                    &nbsp;
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                           aria-expanded="false">
-                            Participantes <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="{{route('athletes.index')}}">Inscritos
-                                    <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></a></li>
-                            <li><a href="{{route('athletes.create')}}">Crear Participante
-                                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
-                            <li><a href="{{route('print_athletes')}}">Credenciales
-                                    <span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
-                            <li><a href="{{route('getImport')}}">Importar base
-                                    <span class="glyphicon glyphicon-import" aria-hidden="true"></span></a></li>
-                        </ul>
-                    </li>
+                    @if (Auth::check())
+                        <li class="active"><a href="{{route('home')}}">Inicio <span
+                                        class="sr-only">(current)</span></a></li>
 
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                           aria-expanded="false">
-                            Acreditaciones <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="{{route('indexAcreditados')}}">Acreditados
-                                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></a></li>
-                            <li><a href="{{route('indexAcreditar')}}">Acreditar
-                                    <span class="glyphicon glyphicon-check" aria-hidden="true"></span></a></li>
-                        </ul>
-                    </li>
 
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                           aria-expanded="false">
-                            Residencias <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="{{route('residencias.index')}}" >Todas <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></a></li>
-                            <li><a href="{{route('residencias.create')}}" >Crear <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
-                        </ul>
-                    </li>
+                        @if(Auth::user()->hasRole('admin'))
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                   aria-expanded="false">
+                                    Participantes <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="{{route('athletes.index')}}">Inscritos
+                                            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></a>
+                                    </li>
+                                    <li><a href="{{route('athletes.create')}}">Crear Participante
+                                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
+                                    <li><a href="{{route('print_athletes')}}">Credenciales
+                                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
+                                    <li><a href="{{route('getImport')}}">Importar base
+                                            <span class="glyphicon glyphicon-import" aria-hidden="true"></span></a></li>
+                                </ul>
+                            </li>
 
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
-                           aria-expanded="false">
-                            Eventos <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="{{route('events.index')}}" >Todos <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></a></li>
-                            <li><a href="{{route('events.create')}}" >Crear Nuevo <span class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
-                            <li><a href="{{route('events.createComanda')}}" >Comandas
-                                    <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>/
-                                    <span class="glyphicon glyphicon-bed" aria-hidden="true"></span></a></li>
-                        </ul>
-                    </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                   aria-expanded="false">
+                                    Acreditaciones <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="{{route('indexAcreditados')}}">Acreditados
+                                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></a></li>
+                                    <li><a href="{{route('indexAcreditar')}}">Acreditar
+                                            <span class="glyphicon glyphicon-check" aria-hidden="true"></span></a></li>
+                                </ul>
+                            </li>
 
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                   aria-expanded="false">
+                                    Residencias <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="{{route('residencias.index')}}">Todas <span
+                                                    class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></a>
+                                    </li>
+                                    <li><a href="{{route('residencias.create')}}">Crear <span
+                                                    class="glyphicon glyphicon-plus" aria-hidden="true"></span></a></li>
+                                </ul>
+                            </li>
+                        @endif
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-expanded="false">
+                                Eventos <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a href="{{route('events.index')}}">Todos <span class="glyphicon glyphicon-list-alt"
+                                                                                    aria-hidden="true"></span></a></li>
+                                <li><a href="{{route('events.create')}}">Crear Nuevo <span
+                                                class="glyphicon glyphicon-plus"
+                                                aria-hidden="true"></span></a>
+                                </li>
+                                <li><a href="{{route('events.createComanda')}}">Comandas
+                                        <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>/
+                                        <span class="glyphicon glyphicon-bed" aria-hidden="true"></span></a></li>
+                            </ul>
+                        </li>
+                    @endif
 
                 </ul>
 

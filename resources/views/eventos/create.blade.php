@@ -93,6 +93,7 @@
         //al seleccionar provincia mostrar los deportes
         $("#provincia_id").change(function () {
             var id = this.value;
+            console.log(id);
             var deportes = $("#deporte_id");
             $("#cantidad_personas").val('');
             var token = $("input[name=_token]").val();
@@ -121,6 +122,7 @@
 
         $("#deporte_id").change(function () {
             var deporte_id = this.value;
+            console.log(deporte_id);
             var provincia_id = $("#provincia_id").val();
             var cantidad_personas = $("#cantidad_personas");
             $("#cantidad_personas").val('');

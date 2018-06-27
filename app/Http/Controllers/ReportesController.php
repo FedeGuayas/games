@@ -13,6 +13,11 @@ use Barryvdh\DomPDF\Facade as PDF;
 
 class ReportesController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * imprimir comandas en pdf
      * @param $id

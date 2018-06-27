@@ -15,7 +15,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','first_name','last_name'
+        'name', 'email', 'password', 'first_name', 'last_name'
     ];
 
     /**
@@ -26,4 +26,45 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    //Un usuario tiene muchos roles
+    public function roles()
+    {
+        return $this->belongsToMany('App\Role');
+    }
+
+
+    /**
+     * @param $roles
+     * @return bool
+     *
+     */
+    public function authorizeRoles($roles)
+    {
+        if (is_array($roles)) {
+            return $this->hasAnyRole($roles) || abort(403, 'Esta acción no está autorizada.');
+        }
+        return $this->hasRole($roles) || abort(403, 'Esta acción no está autorizada.');
+    }
+
+    /**
+     * Chequear multiples roles
+     *
+     * @param $roles
+     * @return bool
+     */
+    public function hasAnyRole($roles)
+    {
+        return null !== $this->roles()->whereIn('name', $roles)->first();
+    }
+
+    /**
+     * Chequear un rol
+     * @param $role
+     * @return bool
+     */
+    public function hasRole($role)
+    {
+        return null !== $this->roles()->where('name', $role)->first();
+    }
 }

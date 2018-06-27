@@ -14,6 +14,12 @@ use Datatables;
 
 class EventController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Vista con la lista de participantes
      *
@@ -34,20 +40,30 @@ class EventController extends Controller
     {
         if ($request->ajax()) {
 
-            $eventos = Event::from('events as e')
-                ->join('deportes as d', 'd.id', '=', 'e.deporte_id')
-                ->join('provincias as p', 'p.id', '=', 'e.provincia_id')
-                ->join('residencias as r', 'r.id', '=', 'e.residencia_id')
-                ->where('e.status', '=', Event::EVENTO_ACTIVO)
-                ->select('e.*', 'd.name as deporte', 'p.province', 'r.name as residencia');
+            if ($request->user()->hasRole('admin')){
+                $eventos = Event::from('events as e')
+                    ->join('deportes as d', 'd.id', '=', 'e.deporte_id')
+                    ->join('provincias as p', 'p.id', '=', 'e.provincia_id')
+                    ->join('residencias as r', 'r.id', '=', 'e.residencia_id')
+                    ->where('e.status', '=', Event::EVENTO_ACTIVO)
+                    ->select('e.*', 'd.name as deporte', 'p.province', 'r.name as residencia');
+            }
+
+            if ($request->user()->hasRole('usuario')){
+                $eventos = Event::from('events as e')
+                    ->join('deportes as d', 'd.id', '=', 'e.deporte_id')
+                    ->join('provincias as p', 'p.id', '=', 'e.provincia_id')
+                    ->join('residencias as r', 'r.id', '=', 'e.residencia_id')
+                    ->where('e.status', '=', Event::EVENTO_ACTIVO)
+                    ->where('r.name', '=', 'CEAR')
+                    ->select('e.*', 'd.name as deporte', 'p.province', 'r.name as residencia');
+            }
 
 
             $action_buttons = '
                 <a href="{{ route(\'events.edit\',[$id] ) }}" style="text-decoration-line: none">
                     <button class="btn-xs btn-success"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
                 </a>
-                
-               
                 ';
 //            {!! Form::button('<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>',['class'=>'btn-xs btn-danger','value'=>$id,'onclick'=>'eliminar(this)']) !!}
 
@@ -80,7 +96,7 @@ class EventController extends Controller
                 })
                 ->editColumn('tipo', function ($eventos) {
                     if  ($eventos->tipo=='H'){
-                       return 'HOESPEDAJE';
+                       return 'HOSPEDAJE';
                    }elseif ($eventos->tipo=='A'){
                        return 'ALMUERZO';
                   }elseif ($eventos->tipo=='D'){
@@ -105,7 +121,7 @@ class EventController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
         $provincias = Athlete::from('athletes as a')
             ->join('provincias as p', 'p.id', '=', 'a.provincia_id')
@@ -118,8 +134,19 @@ class EventController extends Controller
         $deportes = Deporte::where('status', Deporte::DEPORTE_ACTIVO)->get();
         $list_deportes = $deportes->pluck('name', 'id');
 
-        $residencias = Residencia::where('status', Residencia::RESIDENCIA_ACTIVO)->get();
+
+        if ($request->user()->hasRole('admin')){
+            $residencias = Residencia::where('status', Residencia::RESIDENCIA_ACTIVO)->get();
+        }
+        if ($request->user()->hasRole('usuario')){
+            $residencias = Residencia::
+                where('name','CEAR')
+                ->where('status', Residencia::RESIDENCIA_ACTIVO)
+                ->get();
+        }
+
         $list_residencias = $residencias->pluck('name', 'id');
+
 
         return view('eventos.create', compact('list_provincias', 'list_deportes', 'list_residencias'));
     }
@@ -285,14 +312,14 @@ class EventController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request,$id)
     {
         $event = Event::where('id', $id)->first();
 
         //lista de personas del deporte y provincia en el evento
         $lista = AthleteEvent::from('athlete_event as ae')
             ->join('athletes as a', 'a.id', '=', 'ae.athlete_id')
-            ->where('ae.event_id', $event->id)
+            ->where('ae.event_id',$event->id )
             ->select('a.id', 'a.name', 'a.last_name', 'a.document', 'a.gen', 'a.funcion', 'a.acreditado')
             ->orderBy('a.last_name')
             ->get();
@@ -304,7 +331,7 @@ class EventController extends Controller
 
         $incluidos_id = $incluidos;
 
-        //lista de todas las personas activas del deporte y la provincia queno estan en ele evento
+        //lista de todas las personas activas del deporte y la provincia que no estan en e le evento
         $listaAll = Athlete::from('athletes as a')
             ->where('a.status', Athlete::ATLETA_ACTIVO)
             ->where('a.provincia_id', $event->provincia_id)
@@ -320,7 +347,16 @@ class EventController extends Controller
         $deportes = Deporte::where('status', Deporte::DEPORTE_ACTIVO)->get();
         $list_deportes = $deportes->pluck('name', 'id');
 
-        $residencias = Residencia::where('status', Residencia::RESIDENCIA_ACTIVO)->get();
+        if ($request->user()->hasRole('admin')){
+            $residencias = Residencia::where('status', Residencia::RESIDENCIA_ACTIVO)->get();
+        }
+        if ($request->user()->hasRole('usuario')){
+            $residencias = Residencia::
+            where('name','CEAR')
+                ->where('status', Residencia::RESIDENCIA_ACTIVO)
+                ->get();
+        }
+
         $list_residencias = $residencias->pluck('name', 'id');
 
         return view('eventos.edit', compact('list_provincias', 'list_deportes', 'list_residencias', 'event', 'lista', 'listaAll'));
